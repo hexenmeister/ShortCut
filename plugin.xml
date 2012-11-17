@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="tools"
+            id="ShortCut">
+      </category>
+      <view
+            name="ShortCut"
+            icon="icons/main.png"
+            category="ShortCut"
+            class="de.as.eclipse.shortcut.ui.views.ShortCutView"
+            id="de.as.eclipse.shortcut.ui.views.ShortCutView"
+            restorable="true">
+      </view>
+      <view
+            category="ShortCut"
+            class="de.as.eclipse.shortcut.ui.views.SampleView"
+            icon="icons/sample.gif"
+            id="de.as.eclipse.shortcut.ui.views.SampleView"
+            name="Sample View">
+      </view>
+      <view
+            category="ShortCut"
+            class="de.as.eclipse.shortcut.ui.views.MySCView"
+            icon="icons/main.png"
+            id="de.as.eclipse.shortcut.ui.views.MySCView"
+            name="MySCView"
+            restorable="true">
+      </view>
+   </extension>
+
+   <extension
+       point="org.eclipse.ui.console.consolePageParticipants">
+     <consolePageParticipant
+          class="de.as.eclipse.shortcut.ui.console.ShortcutConsolePageParticipant"
+          id="de.as.eclipse.shortcut.ui.console.ShortcutConsolePageParticipant">
+       <enablement>
+          <instanceof
+                value="de.as.eclipse.shortcut.ui.console.ShortcutConsole">
+          </instanceof></enablement>
+     </consolePageParticipant>
+   </extension>
+</plugin>

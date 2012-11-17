@@ -1,0 +1,24 @@
+
+Feature requests:
+
+Edit as new...
+Sync (Speichern/Lesen)
+ReadOnly-Container (mit Schreibrechten f. bestimmte User)
+Shared-Container
+Default-Shared-Container
+Anzeige-Konfiguration (Container an- oder abwählen)
+Anzeige-Konfiguration speichern f. Schnellzugrif
+
+Script-Fähigkeit
+
+Linux-Executor
+
+Tree-View
+
+Öffnen in Eclipse-Editor (link zu Projekt-Dateien)
+
+Automatisch alle Container aus einer Schared-Verzeichnis laden. Filterung für bestimmte User.
+ 
+
+ Group / Prio / Category 1st / 2st
+  
