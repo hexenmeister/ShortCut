@@ -99,6 +99,9 @@ public class ProcessExecutor {
                 StreamGrabber outputGrabber = new StreamGrabber(process.getInputStream(), console);
                 errorGrabber.start();
                 outputGrabber.start();
+                // TODO: Gedacht, um später in der Console Prozesse beenden zu können.
+                // Es muss noch eine sichere Möglichkeit geschaffen werden, die beendte Prozesse in jedem Fall zu entfernen.
+                // Ansonsten entstehen Leaks (wie auch gerade jetzt).
                 ProcessExecutor.processList.add(process);
             } catch (IOException e) {
                 e.printStackTrace();
