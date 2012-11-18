@@ -392,7 +392,7 @@ public class ShortcutDialog extends TrayDialog {
 
             // Containerwahl
             ShortcutContainer container = store.getContainers().get(this.fContainer.getSelectionIndex());
-            Shortcut shortcut = this.shortcut != null ? this.shortcut : container.getShortcutFactory().createNewShortcut();
+            Shortcut shortcut = this.shortcut != null ? this.shortcut : container.createNewShortcut();
             String name = this.fName.getText();
 
             if (name.equals("")) {
