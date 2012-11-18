@@ -47,7 +47,9 @@ public class ProcessExecutor {
         try {
             location = variableManager.performStringSubstitution(location, false);
             //            parameter = variableManager.performStringSubstitution(parameter, false);
-            workDir = variableManager.performStringSubstitution(workDir, false);
+            if (workDir != null) {
+                workDir = variableManager.performStringSubstitution(workDir, false);
+            }
         } catch (CoreException e1) {
             // ignore
         }
