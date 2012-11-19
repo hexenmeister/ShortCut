@@ -14,7 +14,7 @@ import de.as.eclipse.shortcut.persist.ShortcutStore;
 public class Activator extends AbstractUIPlugin {
 
     // The plug-in ID
-    public static final String PLUGIN_ID = "ShortCut"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "de.as.eclipse.plugin.shortcut"; //$NON-NLS-1$
 
     // The shared instance
     private static Activator plugin;

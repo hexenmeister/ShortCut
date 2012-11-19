@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/de.as.eclipse.feature.shortcut_1.0.0.qualifier.jar" id="de.as.eclipse.feature.shortcut" version="1.0.0.qualifier"/>
+</site>

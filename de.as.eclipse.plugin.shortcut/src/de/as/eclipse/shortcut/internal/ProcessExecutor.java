@@ -42,7 +42,7 @@ public class ProcessExecutor {
         // TODO: MoreCommands-Feld
         String workDir = shortcut.getWorkingDir();
 
-        // Variablen auflösen
+        // Variablen auflï¿½sen
         IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
         try {
             location = variableManager.performStringSubstitution(location, false);
@@ -101,8 +101,8 @@ public class ProcessExecutor {
                 StreamGrabber outputGrabber = new StreamGrabber(process.getInputStream(), console);
                 errorGrabber.start();
                 outputGrabber.start();
-                // TODO: Gedacht, um später in der Console Prozesse beenden zu können.
-                // Es muss noch eine sichere Möglichkeit geschaffen werden, die beendte Prozesse in jedem Fall zu entfernen.
+                // TODO: Gedacht, um spï¿½ter in der Console Prozesse beenden zu kï¿½nnen.
+                // Es muss noch eine sichere Mï¿½glichkeit geschaffen werden, die beendte Prozesse in jedem Fall zu entfernen.
                 // Ansonsten entstehen Leaks (wie auch gerade jetzt).
                 ProcessExecutor.processList.add(process);
             } catch (IOException e) {
