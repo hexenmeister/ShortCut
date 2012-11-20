@@ -1,8 +1,10 @@
 package de.as.eclipse.shortcut.persist;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +15,7 @@ import org.eclipse.ui.XMLMemento;
 import de.as.eclipse.shortcut.business.Shortcut;
 
 /**
- * Erg‰nzt AbstractShortcutDAO um die Funktionalit‰t Eintr‰ge (Shortcuts) im XML-Form zu speichern. Benutzt XMLMemento (Eclipse).
+ * Erg√§nzt AbstractShortcutDAO um die Funktionalit√§t Eintr√§ge (Shortcuts) im XML-Form zu speichern. Benutzt XMLMemento (Eclipse).
  * 
  * @author Alexander Schulz
  * Date: 18.11.2012
@@ -54,17 +56,32 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
     private static final String RGB_TAG = "rgb";
 
     /**
-     * ‹berf¸hrt die Eintr‰ge aus der Map ins XML.
-     * @param shortcuts Map mit en Eintr‰gen (id, Item).
+     * √úberf√ºhrt die Eintr√§ge aus der Map ins XML.
+     * @param shortcuts Map mit en Eintr√§gen (id, Item).
      * @param root Root-Tag
      * @return String mit XML-Daten
      */
-    protected static String convertShortcutToString(Map<Integer, Shortcut> shortcuts, String root) {
+    protected static String writeShortcutsToString(Map<Integer, Shortcut> shortcuts, String root) {
+        if (shortcuts != null) {
+            StringWriter writer = new StringWriter();
+            AbstractShortcutXmlDAO.writeShortcuts(shortcuts, root, writer);
+            return writer.toString();
+        }
+        return "";
+    }
+
+    /**
+     * √úberf√ºhrt die Eintr√§ge aus der Map ins XML und schreibt diese in ein gegebenen Writer.
+     * @param shortcuts Map mit en Eintr√§gen (id, Item).
+     * @param root Root-Tag
+     * @param writer Ziel f√ºr die Datenspeicherung
+     */
+    protected static void writeShortcuts(Map<Integer, Shortcut> shortcuts, String root, Writer writer) {
         if (shortcuts != null) {
             XMLMemento rootMemento = XMLMemento.createWriteRoot(root);
             for (Integer id : shortcuts.keySet()) {
                 Shortcut shortcut = shortcuts.get(id);
-                // Eintr‰ge ohne ID ignorieren (darf eigentlich nicht passieren, w‰re ein interner Fehler).
+                // Eintr√§ge ohne ID ignorieren (darf eigentlich nicht passieren, w√§re ein interner Fehler).
                 if (shortcut.getId() == null) {
                     continue;
                 }
@@ -82,32 +99,41 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
                 memento.putBoolean(AbstractShortcutXmlDAO.GRABOUTPUT_TAG, shortcut.isGrabOutput());
             }
 
-            StringWriter writer = new StringWriter();
             try {
                 rootMemento.save(writer);
-                return writer.toString();
             } catch (IOException e) {
                 e.printStackTrace();
+                // TODO: Vern√ºnftige Exception
             }
         }
-        return "";
     }
 
     /**
-     * Parst XML-String uns erstellt daraus ein Map mit Shortcut-Eintr‰gen (id, Item).
+     * Parst XML-String und erstellt daraus ein Map mit Shortcut-Eintr√§gen (id, Item).
      * @param stringData String mit XML-Daten
      * @param factory ShortcutFactory (notwendig, um neue Instanzen der Klasse Shortcut zu erzeugen)
      * @return Map mit Shortcuts (id, Item)
      */
-    protected static Map<Integer, Shortcut> convertShortcutFromString(String stringData, ShortcutFactory factory) {
-        Map<Integer, Shortcut> m = new HashMap<Integer, Shortcut>();
-
+    protected static Map<Integer, Shortcut> readShortcutsFromString(String stringData, ShortcutFactory factory) {
         if (stringData.length() == 0) {
-            return m;
+            return new HashMap<Integer, Shortcut>();
         }
 
+        StringReader reader = new StringReader(stringData);
+
+        return AbstractShortcutXmlDAO.readShortcuts(reader, factory);
+    }
+
+    /**
+     * Liest die Daten aus dem gegebenen Reader, parst XML-String uns erstellt daraus ein Map mit Shortcut-Eintr√§gen (id, Item).
+     * @param reader Source
+     * @param factory ShortcutFactory (notwendig, um neue Instanzen der Klasse Shortcut zu erzeugen)
+     * @return Map mit Shortcuts (id, Item)
+     */
+    protected static Map<Integer, Shortcut> readShortcuts(Reader reader, ShortcutFactory factory) {
+        Map<Integer, Shortcut> m = new HashMap<Integer, Shortcut>();
         try {
-            XMLMemento rootMemento = XMLMemento.createReadRoot(new StringReader(stringData));
+            XMLMemento rootMemento = XMLMemento.createReadRoot(reader);
             IMemento[] mementos = rootMemento.getChildren(AbstractShortcutXmlDAO.SHORTCUT_TAG);
             for (int i = 0; i < mementos.length; i++) {
                 IMemento memento = mementos[i];
@@ -128,20 +154,21 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
 
                 // Wegen  Migration der Daten der Vorversion: ggf. eine neue ID hier erstellen
                 if (shortcut.getId() == null) {
-                    // Wenn Eintr‰ge ohne ID gefunden werden, dann d¸rften alle ohne ID sein (Daten der Vorversion).
-                    // Einzelne Eintr‰ge ohne ID sind in der Speicherungsfunktion verhindert.
+                    // Wenn Eintr√§ge ohne ID gefunden werden, dann d√ºrften alle ohne ID sein (Daten der Vorversion).
+                    // Einzelne Eintr√§ge ohne ID sind in der Speicherungsfunktion verhindert.
                     // Wahrscheinlichkeit einer Situation mit korrupten Daten ist gering wird in Kauf genommen.
                     // daher numerieren wird sie alle einfach durch.
                     shortcut.setId(i);
                 }
 
-                // Wenn ein ID-Map benˆtigt wird (ohne ID - kein EIntrag)
+                // Wenn ein ID-Map ben√∂tigt wird (ohne ID - kein EIntrag)
                 if (m != null) {
                     m.put(shortcut.getId(), shortcut);
                 }
             }
         } catch (WorkbenchException e) {
             e.printStackTrace();
+            // TODO: Vern√ºnftige Exception
         }
         return m;
     }

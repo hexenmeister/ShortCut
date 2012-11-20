@@ -38,19 +38,19 @@ public class ShortcutPreferenceStoreDAO extends AbstractShortcutXmlDAO {
     @Override
     protected Map<Integer, Shortcut> getShortcutsMap() {
         String stringData = this.getStore().getString(ShortcutPreferenceStoreDAO.ROOT_TAG);
-        Map<Integer, Shortcut> m = AbstractShortcutXmlDAO.convertShortcutFromString(stringData, this.getFactory());
+        Map<Integer, Shortcut> m = AbstractShortcutXmlDAO.readShortcutsFromString(stringData, this.getFactory());
         return m;
     }
 
     /**
      * {@inheritDoc}
-     * Auchtung! Die Daten werden an eine PreferenceStore übergeben,
+     * Auchtung! Die Daten werden an eine PreferenceStore Ã¼bergeben,
      * wann diese wirklich dauerhaft gespeichert werden, entscheidet die Store!
      * @see de.as.eclipse.shortcut.persist.AbstractShortcutDAO#saveShortcuts(java.util.Map)
      */
     @Override
     protected void saveShortcuts(Map<Integer, Shortcut> shortcuts) {
-        this.getStore().setValue(ShortcutPreferenceStoreDAO.ROOT_TAG, AbstractShortcutXmlDAO.convertShortcutToString(shortcuts, ShortcutPreferenceStoreDAO.SHORTCUTS_TAG));
+        this.getStore().setValue(ShortcutPreferenceStoreDAO.ROOT_TAG, AbstractShortcutXmlDAO.writeShortcutsToString(shortcuts, ShortcutPreferenceStoreDAO.SHORTCUTS_TAG));
     }
 
 }
