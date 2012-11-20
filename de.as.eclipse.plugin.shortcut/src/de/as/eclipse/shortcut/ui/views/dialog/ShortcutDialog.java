@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Text;
 
 import de.as.eclipse.shortcut.Activator;
 import de.as.eclipse.shortcut.business.Shortcut;
+import de.as.eclipse.shortcut.persist.DAOException;
 import de.as.eclipse.shortcut.persist.ShortcutContainer;
 import de.as.eclipse.shortcut.persist.ShortcutStore;
 import de.as.eclipse.shortcut.ui.UIUtils;
@@ -115,16 +116,16 @@ public class ShortcutDialog extends TrayDialog {
             this.fContainer.add(shortcutContainer.getName());
         }
         if (this.shortcut == null) {
-            // Wenn Neuanlage: erste auswählen
+            // Wenn Neuanlage: erste auswï¿½hlen
             this.fContainer.select(0);
             this.fContainer.setEnabled(true);
         } else {
-            // Wenn Bearbeitung: entsprechenden Container auswählen
+            // Wenn Bearbeitung: entsprechenden Container auswï¿½hlen
             ShortcutContainer container = Activator.getDefault().getShortcutStore().getContainer(this.shortcut);
             this.fContainer.select(this.containerList.indexOf(container));
             this.fContainer.setEnabled(false);
         }
-        // Wenn nur ein Eintrag vorhanden: Combo auf 'nicht änderbar' setzen
+        // Wenn nur ein Eintrag vorhanden: Combo auf 'nicht ï¿½nderbar' setzen
         if (this.fContainer.getItemCount() == 1) {
             this.fContainer.setEnabled(false);
         }
@@ -286,7 +287,7 @@ public class ShortcutDialog extends TrayDialog {
     }
 
     private String substitureWorkspaceLocations(String path) {
-        // Nachsehen, ob der Pfad einem der registrierten Projekte angehört
+        // Nachsehen, ob der Pfad einem der registrierten Projekte angehï¿½rt
         IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
         for (int i = 0; i < projects.length; i++) {
             String projectPath = projects[i].getLocation().toOSString();
@@ -307,7 +308,7 @@ public class ShortcutDialog extends TrayDialog {
             return path;
         }
 
-        // ... ansonsten unverändert zurückgeben
+        // ... ansonsten unverï¿½ndert zurï¿½ckgeben
         return path;
     }
 
@@ -325,13 +326,13 @@ public class ShortcutDialog extends TrayDialog {
     }
 
     /**
-     * Öffnet ein Benutzerdialog zur Auswahl von Dateien/Verzeichnisen.
+     * ï¿½ffnet ein Benutzerdialog zur Auswahl von Dateien/Verzeichnisen.
      * @param path Initial-Pfad (Vorbelegung)
-     * @param selectFile true, wenn eine Datei ausgewählt werden soll, falsch, wenn ein Verzeichniss.
-     * @return ausgewählter Pfad
+     * @param selectFile true, wenn eine Datei ausgewï¿½hlt werden soll, falsch, wenn ein Verzeichniss.
+     * @return ausgewï¿½hlter Pfad
      */
     private String browseLocation(String path, boolean selectFile) {
-        // Variablen auflösen
+        // Variablen auflï¿½sen
         IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
         try {
             path = variableManager.performStringSubstitution(path, false);
@@ -339,14 +340,14 @@ public class ShortcutDialog extends TrayDialog {
             // ignore
         }
 
-        // Prüfen, ob es eine Datei/Verzeichnis ist
+        // Prï¿½fen, ob es eine Datei/Verzeichnis ist
         File f = new File(path);
         File orig = f;
         // ggf. Probieren in der Hierarchie ein existierendes Verzeichnis zu finden
         while ((f != null) && !f.exists()) {
             f = f.getParentFile();
         }
-        // Prüfen, ob etwas gefunden wurde und ggf. das letze Verzeichnis nehmen
+        // Prï¿½fen, ob etwas gefunden wurde und ggf. das letze Verzeichnis nehmen
         if (f != null) {
             if (f.isFile()) {
                 f = f.getParentFile();
@@ -356,7 +357,7 @@ public class ShortcutDialog extends TrayDialog {
         if (selectFile) {
             FileDialog dialog = new FileDialog(this.getShell());
 
-            // Zweite Prüfung wegen getParent vorher notwendig
+            // Zweite Prï¿½fung wegen getParent vorher notwendig
             if (f != null) {
                 dialog.setFilterPath(f.getAbsolutePath());
             }
@@ -371,7 +372,7 @@ public class ShortcutDialog extends TrayDialog {
         } else {
             DirectoryDialog dialog = new DirectoryDialog(this.getShell());
 
-            // Zweite Prüfung wegen getParent vorher notwendig
+            // Zweite Prï¿½fung wegen getParent vorher notwendig
             if (f != null) {
                 dialog.setFilterPath(f.getAbsolutePath());
             }
@@ -410,10 +411,15 @@ public class ShortcutDialog extends TrayDialog {
             shortcut.setRgb(this.cColor.getRgb());
             shortcut.setGrabOutput(this.btnGrabOutput.getSelection());
 
-            if (this.shortcut == null) {
-                container.addShortcut(shortcut);
-            } else {
-                container.updateShortcut(shortcut);
+            try {
+                if (this.shortcut == null) {
+                    container.addShortcut(shortcut);
+                } else {
+                    container.updateShortcut(shortcut);
+                }
+            } catch (DAOException e) {
+                // TODO Meldung anzeigen
+                e.printStackTrace();
             }
             this.close();
         } else {
@@ -426,7 +432,7 @@ public class ShortcutDialog extends TrayDialog {
 
         private Button button;
 
-        // Subclasses sind im SWT nicht empfohlen, daher wird die klasse Button hier gewrapt (incl. Spaß mit Layout).
+        // Subclasses sind im SWT nicht empfohlen, daher wird die klasse Button hier gewrapt (incl. Spaï¿½ mit Layout).
         public ColorButton(Composite parent) {
             super(parent, SWT.NONE);
             this.button = new Button(this, SWT.BORDER);

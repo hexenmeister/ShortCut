@@ -45,6 +45,7 @@ import org.eclipse.ui.part.ViewPart;
 import de.as.eclipse.shortcut.Activator;
 import de.as.eclipse.shortcut.business.Shortcut;
 import de.as.eclipse.shortcut.internal.ProcessExecutor;
+import de.as.eclipse.shortcut.persist.DAOException;
 import de.as.eclipse.shortcut.ui.UIConstants;
 import de.as.eclipse.shortcut.ui.UIUtils;
 import de.as.eclipse.shortcut.ui.views.dialog.ShortcutDialog;
@@ -457,7 +458,12 @@ public class ShortCutView extends ViewPart {
                 Iterator<?> itr = ((IStructuredSelection) selection).iterator();
 
                 while (itr.hasNext()) {
-                    Activator.getDefault().getShortcutStore().removeShortcut((Shortcut) itr.next());
+                    try {
+                        Activator.getDefault().getShortcutStore().removeShortcut((Shortcut) itr.next());
+                    } catch (DAOException e) {
+                        // TODO: Meldung anzeigen
+                        e.printStackTrace();
+                    }
                 }
 
                 ShortCutView.tableViewer.refresh();

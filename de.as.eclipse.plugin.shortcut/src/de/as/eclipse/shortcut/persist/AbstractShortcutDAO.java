@@ -8,7 +8,7 @@ import java.util.Map;
 import de.as.eclipse.shortcut.business.Shortcut;
 
 /**
- * Abstrakte Implementierung der Basis-Funktionalität zum Persistieren von Shortcut-Einträgen.
+ * Abstrakte Implementierung der Basis-Funktionalitï¿½t zum Persistieren von Shortcut-Eintrï¿½gen.
  * Keine Angaben hier zum Format, oder Speicherort (-Typ).
  *
  * @author Alexander Schulz
@@ -35,12 +35,12 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
     }
 
     @Override
-    public List<Shortcut> getShortcuts() {
+    public List<Shortcut> getShortcuts() throws DAOException {
         return Collections.unmodifiableList(new ArrayList<Shortcut>(this.getShortcutsMap().values()));
     }
 
     @Override
-    public void addShortcut(Shortcut shortcut) {
+    public void addShortcut(Shortcut shortcut) throws DAOException {
         if (shortcut.getId() != null) {
             throw new RuntimeException("DAO error: attempt to add a new shortcut with an existing id. please use update function.");
         }
@@ -51,14 +51,14 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
     }
 
     @Override
-    public void removeShortcut(Shortcut shortcut) {
+    public void removeShortcut(Shortcut shortcut) throws DAOException {
         Map<Integer, Shortcut> m = this.getShortcutsMap();
         m.remove(shortcut.getId());
         this.saveShortcuts(m);
     }
 
     @Override
-    public void updateShortcut(Shortcut shortcut) {
+    public void updateShortcut(Shortcut shortcut) throws DAOException {
         if (shortcut.getId() == null) {
             throw new RuntimeException("DAO error: attempt to update a shortcut without an existing id. please use add function.");
         }
@@ -69,11 +69,11 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
     }
 
     @Override
-    public void mergeShortcuts(List<Shortcut> newList) {
+    public void mergeShortcuts(List<Shortcut> newList) throws DAOException {
         Map<Integer, Shortcut> m = this.getShortcutsMap();
         if (newList != null) {
             for (Shortcut newShortcut : newList) {
-                // Prüfen, ob ein entsprechender Eintrag bereits vorliegt
+                // Prï¿½fen, ob ein entsprechender Eintrag bereits vorliegt
                 if (!m.containsValue(newShortcut)) {
                     // ID erstellen / erneuern
                     newShortcut.setId(this.getNewId(m));
@@ -85,26 +85,26 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
     }
 
     @Override
-    public void removeAllShortcuts() {
+    public void removeAllShortcuts() throws DAOException {
         this.saveShortcuts(null);
     }
 
     @Override
     public boolean isReadOnly() {
-        // Speicherung defaultmäßig zulässig
+        // Speicherung defaultmï¿½ï¿½ig zulï¿½ssig
         return false;
     }
 
     /**
-     * Liefert eine noch ungebrauchte Integer-ID (verwendbar für einen neuen Eintrag).
-     * IDs werden intern benötigt, um ein gegebenen Shortcut-Eintrag wieder zu erkennen.
-     * @param m Map mit den aktuell existierenden Shortcut-Einträgen
+     * Liefert eine noch ungebrauchte Integer-ID (verwendbar fï¿½r einen neuen Eintrag).
+     * IDs werden intern benï¿½tigt, um ein gegebenen Shortcut-Eintrag wieder zu erkennen.
+     * @param m Map mit den aktuell existierenden Shortcut-Eintrï¿½gen
      * @return eine neue ID (Integer)
      */
     private Integer getNewId(Map<Integer, Shortcut> m) {
         int newId = m.size();
 
-        // Wenn die Anzahl der Elemente als ID bereits existiert, dann haben wir eine ID-Lücke, die gefüllt werden kann.
+        // Wenn die Anzahl der Elemente als ID bereits existiert, dann haben wir eine ID-Lï¿½cke, die gefï¿½llt werden kann.
         while (m.get(newId) != null) {
             newId--;
         }
@@ -113,15 +113,16 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
     }
 
     /**
-     * Liest die persistierte Einträge.
-     * @return Map mit den Einträgen.
+     * Liest die persistierte EintrÃ¤ge.
+     * @throws DAOException Persistenz-Probleme
+     * @return Map mit den EintrÃ¤gen.
      */
-    protected abstract Map<Integer, Shortcut> getShortcutsMap();
+    protected abstract Map<Integer, Shortcut> getShortcutsMap() throws DAOException;
 
     /**
-     * Persistiert die Einträge.
-     * @param shortcuts Map mit den Einträgen
+     * Persistiert die EintrÃ¤ge.
+     * @param shortcuts Map mit den EintrÃ¤gen
      */
-    protected abstract void saveShortcuts(Map<Integer, Shortcut> shortcuts);
+    protected abstract void saveShortcuts(Map<Integer, Shortcut> shortcuts) throws DAOException;
 
 }

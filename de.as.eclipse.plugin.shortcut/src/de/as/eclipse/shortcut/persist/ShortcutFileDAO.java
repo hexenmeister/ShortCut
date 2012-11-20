@@ -31,7 +31,7 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO {
     }
 
     @Override
-    protected Map<Integer, Shortcut> getShortcutsMap() {
+    protected Map<Integer, Shortcut> getShortcutsMap() throws DAOException {
         Reader reader;
         try {
             reader = new FileReader(this.containerFile);
@@ -47,7 +47,7 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO {
     }
 
     @Override
-    protected void saveShortcuts(Map<Integer, Shortcut> shortcuts) {
+    protected void saveShortcuts(Map<Integer, Shortcut> shortcuts) throws DAOException {
         Writer writer;
         try {
             writer = new FileWriter(this.containerFile);

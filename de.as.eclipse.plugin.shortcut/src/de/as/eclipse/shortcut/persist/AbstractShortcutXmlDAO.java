@@ -5,6 +5,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +32,13 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
     }
 
     // XML-Tags
+    private static final String CREATOR_TAG = "creator";
+
+    private static final String OS_TAG = "os";
+
+    private static final String USER_TAG = "user";
+
+    private static final String DATE_TAG = "date";
 
     private static final String SHORTCUT_TAG = "shortcut";
 
@@ -60,8 +69,9 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
      * @param shortcuts Map mit en Einträgen (id, Item).
      * @param root Root-Tag
      * @return String mit XML-Daten
+     * @throws DAOException Persistenz-Probleme
      */
-    protected static String writeShortcutsToString(Map<Integer, Shortcut> shortcuts, String root) {
+    protected static String writeShortcutsToString(Map<Integer, Shortcut> shortcuts, String root) throws DAOException {
         if (shortcuts != null) {
             StringWriter writer = new StringWriter();
             AbstractShortcutXmlDAO.writeShortcuts(shortcuts, root, writer);
@@ -75,37 +85,82 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
      * @param shortcuts Map mit en Einträgen (id, Item).
      * @param root Root-Tag
      * @param writer Ziel für die Datenspeicherung
+     * @throws DAOException Persistenz-Probleme
      */
-    protected static void writeShortcuts(Map<Integer, Shortcut> shortcuts, String root, Writer writer) {
+    protected static void writeShortcuts(Map<Integer, Shortcut> shortcuts, String root, Writer writer) throws DAOException {
         if (shortcuts != null) {
             XMLMemento rootMemento = XMLMemento.createWriteRoot(root);
+
+            // Prolog
+            rootMemento.putString(AbstractShortcutXmlDAO.CREATOR_TAG, "ShortCut");
+            rootMemento.putString(AbstractShortcutXmlDAO.USER_TAG, System.getProperty("user.name"));
+            rootMemento.putString(AbstractShortcutXmlDAO.OS_TAG, System.getProperty("os.name") + ", " + System.getProperty("os.version") + ", " + System.getProperty("os.arch"));
+            rootMemento.putString(AbstractShortcutXmlDAO.DATE_TAG, DateFormat.getDateTimeInstance().format(new Date()));
+
             for (Integer id : shortcuts.keySet()) {
                 Shortcut shortcut = shortcuts.get(id);
                 // Einträge ohne ID ignorieren (darf eigentlich nicht passieren, wäre ein interner Fehler).
                 if (shortcut.getId() == null) {
                     continue;
                 }
-                IMemento memento = rootMemento.createChild(AbstractShortcutXmlDAO.SHORTCUT_TAG);
-                memento.putInteger(AbstractShortcutXmlDAO.ID_TAG, shortcut.getId());
-                memento.putString(AbstractShortcutXmlDAO.NAME_TAG, shortcut.getName());
-                memento.putString(AbstractShortcutXmlDAO.GROUP_TAG, shortcut.getGroup());
-                memento.putString(AbstractShortcutXmlDAO.LOCATION_TAG, shortcut.getLocation());
-                memento.putString(AbstractShortcutXmlDAO.PRIORITY_TAG, shortcut.getPriority());
-                memento.putString(AbstractShortcutXmlDAO.CATEGORY_TAG, shortcut.getCategory1());
-                memento.putString(AbstractShortcutXmlDAO.CATEGORY2_TAG, shortcut.getCategory2());
-                memento.putString(AbstractShortcutXmlDAO.WORKINGDIR_TAG, shortcut.getWorkingDir());
-                memento.putString(AbstractShortcutXmlDAO.MCMDS_TAG, shortcut.getMoreCommands());
-                memento.putString(AbstractShortcutXmlDAO.RGB_TAG, shortcut.getRgb());
-                memento.putBoolean(AbstractShortcutXmlDAO.GRABOUTPUT_TAG, shortcut.isGrabOutput());
+                IMemento itemMemento = rootMemento.createChild(AbstractShortcutXmlDAO.SHORTCUT_TAG);
+                itemMemento.putInteger(AbstractShortcutXmlDAO.ID_TAG, shortcut.getId());
+                itemMemento.putString(AbstractShortcutXmlDAO.NAME_TAG, shortcut.getName());
+                itemMemento.putString(AbstractShortcutXmlDAO.GROUP_TAG, shortcut.getGroup());
+                itemMemento.putString(AbstractShortcutXmlDAO.LOCATION_TAG, shortcut.getLocation());
+                itemMemento.putString(AbstractShortcutXmlDAO.PRIORITY_TAG, shortcut.getPriority());
+                itemMemento.putString(AbstractShortcutXmlDAO.CATEGORY_TAG, shortcut.getCategory1());
+                itemMemento.putString(AbstractShortcutXmlDAO.CATEGORY2_TAG, shortcut.getCategory2());
+                itemMemento.putString(AbstractShortcutXmlDAO.WORKINGDIR_TAG, shortcut.getWorkingDir());
+                itemMemento.putString(AbstractShortcutXmlDAO.MCMDS_TAG, shortcut.getMoreCommands());
+                itemMemento.putString(AbstractShortcutXmlDAO.RGB_TAG, shortcut.getRgb());
+                itemMemento.putBoolean(AbstractShortcutXmlDAO.GRABOUTPUT_TAG, shortcut.isGrabOutput());
             }
 
             try {
                 rootMemento.save(writer);
             } catch (IOException e) {
-                e.printStackTrace();
-                // TODO: Vernünftige Exception
+                throw new DAOException("could not save shortcut list", e);
             }
         }
+    }
+
+    /**
+     * Parst XML-String und erstellt daraus ein Map mit Prolog-Einträgen (key, value).
+     * @param stringData String mit XML-Daten
+     * @return Map mit Prolog-Parametern (key, value)
+     * @throws DAOException Persistenz-Probleme
+     */
+    protected static Map<String, String> readPrologFromString(String stringData) throws DAOException {
+        if (stringData.length() == 0) {
+            return new HashMap<String, String>();
+        }
+
+        StringReader reader = new StringReader(stringData);
+
+        return AbstractShortcutXmlDAO.readProlog(reader);
+    }
+
+    /**
+     * Liest die Daten aus dem gegebenen Reader, parst XML-String und erstellt daraus ein Map mit Prolog-Einträgen (key, value).
+     * @param reader Source
+     * @return Map mit Prolog-Parametern (key, value)
+     * @throws DAOException Persistenz-Probleme
+     */
+    protected static Map<String, String> readProlog(Reader reader) throws DAOException {
+        Map<String, String> ret = new HashMap<String, String>();
+
+        try {
+            XMLMemento rootMemento = XMLMemento.createReadRoot(reader);
+            String[] keys = rootMemento.getAttributeKeys();
+            for (int i = 0, n = keys.length; i < n; i++) {
+                ret.put(keys[i], rootMemento.getString(keys[i]));
+            }
+        } catch (WorkbenchException e) {
+            throw new DAOException("could not read shortcut list", e);
+        }
+
+        return ret;
     }
 
     /**
@@ -113,8 +168,9 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
      * @param stringData String mit XML-Daten
      * @param factory ShortcutFactory (notwendig, um neue Instanzen der Klasse Shortcut zu erzeugen)
      * @return Map mit Shortcuts (id, Item)
+     * @throws DAOException Persistenz-Probleme
      */
-    protected static Map<Integer, Shortcut> readShortcutsFromString(String stringData, ShortcutFactory factory) {
+    protected static Map<Integer, Shortcut> readShortcutsFromString(String stringData, ShortcutFactory factory) throws DAOException {
         if (stringData.length() == 0) {
             return new HashMap<Integer, Shortcut>();
         }
@@ -125,15 +181,17 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
     }
 
     /**
-     * Liest die Daten aus dem gegebenen Reader, parst XML-String uns erstellt daraus ein Map mit Shortcut-Einträgen (id, Item).
+     * Liest die Daten aus dem gegebenen Reader, parst XML-String und erstellt daraus ein Map mit Shortcut-Einträgen (id, Item).
      * @param reader Source
      * @param factory ShortcutFactory (notwendig, um neue Instanzen der Klasse Shortcut zu erzeugen)
      * @return Map mit Shortcuts (id, Item)
+     * @throws DAOException Persistenz-Probleme
      */
-    protected static Map<Integer, Shortcut> readShortcuts(Reader reader, ShortcutFactory factory) {
+    protected static Map<Integer, Shortcut> readShortcuts(Reader reader, ShortcutFactory factory) throws DAOException {
         Map<Integer, Shortcut> m = new HashMap<Integer, Shortcut>();
         try {
             XMLMemento rootMemento = XMLMemento.createReadRoot(reader);
+
             IMemento[] mementos = rootMemento.getChildren(AbstractShortcutXmlDAO.SHORTCUT_TAG);
             for (int i = 0; i < mementos.length; i++) {
                 IMemento memento = mementos[i];
@@ -167,8 +225,7 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
                 }
             }
         } catch (WorkbenchException e) {
-            e.printStackTrace();
-            // TODO: Vernünftige Exception
+            throw new DAOException("could not read shortcut list", e);
         }
         return m;
     }

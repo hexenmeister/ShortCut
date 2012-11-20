@@ -13,43 +13,49 @@ import de.as.eclipse.shortcut.business.Shortcut;
 public interface IShortcutDAO {
 
     /**
-     * Liefert Liste aller gespeicherten Einträge.
-     * @return Liste der Einträge
+     * Liefert Liste aller gespeicherten EintrÃ¤ge.
+     * @throws DAOException Persistenz-Probleme
+     * @return Liste der EintrÃ¤ge
      */
-    public abstract List<Shortcut> getShortcuts();
+    public abstract List<Shortcut> getShortcuts() throws DAOException;
 
     /**
-     * Fügt ein neuen Eintrag hinzu.
+     * FÃ¼gt ein neuen Eintrag hinzu.
+     * @throws DAOException Persistenz-Probleme
      * @param shortcut Shortcut-Eintrag
      */
-    public abstract void addShortcut(Shortcut shortcut);
+    public abstract void addShortcut(Shortcut shortcut) throws DAOException;
 
     /**
-     * Entfernt (löscht) den übergeben Shortcut.
+     * Entfernt (lÃ¶scht) den ï¿½bergeben Shortcut.
+     * @throws DAOException Persistenz-Probleme
      * @param shortcut Shortcut-Eintrag
      */
-    public abstract void removeShortcut(Shortcut shortcut);
+    public abstract void removeShortcut(Shortcut shortcut) throws DAOException;
 
     /**
-     * Aktualisiert die Daten für ein gegebenen Eintrag.
+     * Aktualisiert die Daten fÃ¼r ein gegebenen Eintrag.
+     * @throws DAOException Persistenz-Probleme
      * @param shortcut Shortcut-Eintrag
      */
-    public abstract void updateShortcut(Shortcut shortcut);
+    public abstract void updateShortcut(Shortcut shortcut) throws DAOException;
 
     /**
-     * Fügt alle Einträge aus der gegebenen Liste zu den gespeicheren Einträgen hinzu.
-     * @param newList Liste der Einträge
+     * FÃ¼gt alle EintrÃ¤ge aus der gegebenen Liste zu den gespeicheren EintrÃ¤gen hinzu.
+     * @throws DAOException Persistenz-Probleme
+     * @param newList Liste der EintrÃ¤ge
      */
-    public abstract void mergeShortcuts(List<Shortcut> newList);
+    public abstract void mergeShortcuts(List<Shortcut> newList) throws DAOException;
 
     /**
-     * Entfernt alle gespeicherten Einträge.
+     * Entfernt alle gespeicherten EintrÃ¤ge.
+     * @throws DAOException Persistenz-Probleme
      */
-    public abstract void removeAllShortcuts();
+    public abstract void removeAllShortcuts() throws DAOException;
 
     /**
-     * Gibt an, ob der Container beschreibbar ist (d.h. Elemente können hinzugefügt, geändert oder gelöscht werden).
-     * @return true, wenn der Container nicht änderbar ist, false sonst
+     * Gibt an, ob der Container beschreibbar ist (d.h. Elemente kÃ¤nnen hinzugefÃ¼gt, geÃ¤ndert oder gelÃ¶scht werden).
+     * @return true, wenn der Container nicht Ã¤nderbar ist, false sonst
      */
     public abstract boolean isReadOnly();
 

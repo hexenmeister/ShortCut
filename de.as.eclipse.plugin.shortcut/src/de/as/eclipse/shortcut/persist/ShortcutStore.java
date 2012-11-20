@@ -65,12 +65,17 @@ public class ShortcutStore {
         List<Shortcut> ret = new ArrayList<Shortcut>();
         List<ShortcutContainer> list = this.getVisibleContainers();
         for (ShortcutContainer container : list) {
-            ret.addAll(container.getShortcuts());
+            try {
+                ret.addAll(container.getShortcuts());
+            } catch (Exception e) {
+                // ignore: wenn ein Container nicht zugreifbar ist, dann wird er ausgelassen und mit den restlichen fortgefahren
+                // TODO: Vormerken, Meldung ausgeben
+            }
         }
         return ret;
     }
 
-    public void removeShortcut(Shortcut shortcut) {
+    public void removeShortcut(Shortcut shortcut) throws DAOException {
         if (shortcut instanceof ShortcutDecorator) {
             ShortcutContainer container = ((ShortcutDecorator) shortcut).getParentContainer();
             container.removeShortcut(shortcut);
@@ -90,5 +95,5 @@ public class ShortcutStore {
         return null;
     }
 
-    // TODO: Filter-Methoden (definieren, abfragen, ...)
+    // TODO: JavaDoc, Filter-Methoden (definieren, abfragen, ...)
 }
