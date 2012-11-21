@@ -127,6 +127,8 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
 
     /**
      * Parst XML-String und erstellt daraus ein Map mit Prolog-Einträgen (key, value).
+     * 
+     * XXX: für spätere Verwendung, noch keine Ahnung wo.
      * @param stringData String mit XML-Daten
      * @return Map mit Prolog-Parametern (key, value)
      * @throws DAOException Persistenz-Probleme
