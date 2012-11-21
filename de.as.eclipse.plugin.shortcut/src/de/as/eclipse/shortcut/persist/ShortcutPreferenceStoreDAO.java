@@ -23,7 +23,7 @@ public class ShortcutPreferenceStoreDAO extends AbstractShortcutXmlDAO {
     private IPreferenceStore store;
 
     /**
-     * Construktor.
+     * Constructor.
      * @param store IPreferenceStore als Daten-Container
      */
     public ShortcutPreferenceStoreDAO(IPreferenceStore store) {

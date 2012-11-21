@@ -4,8 +4,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import de.as.eclipse.shortcut.persist.ShortcutContainer;
-import de.as.eclipse.shortcut.persist.ShortcutPreferenceStoreDAO;
 import de.as.eclipse.shortcut.persist.ShortcutStore;
 
 /**
@@ -26,41 +24,7 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         Activator.plugin = this;
-        this.store = new ShortcutStore();
-        this.store.init();
-        ShortcutPreferenceStoreDAO dao = new ShortcutPreferenceStoreDAO(this.getPreferenceStore());
-        ShortcutContainer defaultContainer = this.store.createNewContainer(dao, "Intern (Workspace)");
-        this.store.addContainer(defaultContainer);
-        // TODO: Weitere Container lesen
-
-        //XXX:Test
-        //        IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
-        //        //        IStringVariable[] variables = variableManager.getVariables();
-        //        //        System.out.println("---");
-        //        //        for (int i = 0; i < variables.length; i++) {
-        //        //            try {
-        //        //                System.out.println(variables[i].getName() + ":" + variableManager.performStringSubstitution("${" + variables[i].getName() + "}", false));
-        //        //            } catch (Exception e) {
-        //        //                // TODO Auto-generated catch block
-        //        //                e.printStackTrace();
-        //        //            }
-        //        //        }
-        //        System.out.println("---");
-        //        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        //        IWorkspaceRoot root = workspace.getRoot();
-        //        IPath location = root.getLocation();
-        //        System.out.println(location.toString());
-        //        System.out.println(variableManager.performStringSubstitution("${workspace_loc:/External Plug-in Libraries}", false));
-        //        System.out.println(variableManager.performStringSubstitution("${workspace_loc:/FileNameConvert}", false));
-        //        //        System.out.println(variableManager.performStringSubstitution("${workspace_loc:/X}", false));
-        //        System.out.println(variableManager.performStringSubstitution("${eclipse_home}", false));
-        //        //        System.out.println(variableManager.performStringSubstitution("${workspace_loc:ShortCut}", false));
-        //
-        //        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-        //        for (int i = 0; i < projects.length; i++) {
-        //            System.out.println(projects[i].getName() + ":" + projects[i].getLocation() + ":" + projects[i].getFullPath());
-        //        }
-
+        this.store = new ShortcutStore(this.getPreferenceStore());
     }
 
     @Override

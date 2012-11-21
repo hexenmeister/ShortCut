@@ -19,7 +19,7 @@ import de.as.eclipse.shortcut.business.Shortcut;
  * @author Alexander Schulz
  * Date: 20.11.2012
  */
-public class ShortcutFileDAO extends AbstractShortcutXmlDAO {
+public class ShortcutFileDAO extends AbstractShortcutXmlDAO implements IReloadableDAO {
 
     // Eintrag-Tag
     private static final String SHORTCUTS_TAG = "shortcuts";
@@ -58,6 +58,12 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO {
         }
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
         AbstractShortcutXmlDAO.writeShortcuts(shortcuts, ShortcutFileDAO.SHORTCUTS_TAG, bufferedWriter);
+    }
+
+    @Override
+    public String getConfigString() {
+        // Liefert Datei-Pfad, mit dem eine gleichwertige (auf der gleichen Datei besierende) Instanz erstellt werden kann.
+        return this.containerFile.getAbsolutePath();
     }
 
 }

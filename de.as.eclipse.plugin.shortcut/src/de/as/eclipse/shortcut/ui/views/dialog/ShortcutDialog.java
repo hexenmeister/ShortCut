@@ -121,7 +121,7 @@ public class ShortcutDialog extends TrayDialog {
             this.fContainer.setEnabled(true);
         } else {
             // Wenn Bearbeitung: entsprechenden Container ausw�hlen
-            ShortcutContainer container = Activator.getDefault().getShortcutStore().getContainer(this.shortcut);
+            ShortcutContainer container = Activator.getDefault().getShortcutStore().getParentContainer(this.shortcut);
             this.fContainer.select(this.containerList.indexOf(container));
             this.fContainer.setEnabled(false);
         }
