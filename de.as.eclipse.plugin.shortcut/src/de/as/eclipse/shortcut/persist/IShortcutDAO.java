@@ -27,7 +27,7 @@ public interface IShortcutDAO {
     public abstract void addShortcut(Shortcut shortcut) throws DAOException;
 
     /**
-     * Entfernt (löscht) den �bergeben Shortcut.
+     * Entfernt (löscht) den übergeben Shortcut.
      * @throws DAOException Persistenz-Probleme
      * @param shortcut Shortcut-Eintrag
      */

@@ -5,7 +5,7 @@ import java.util.List;
 import de.as.eclipse.shortcut.business.Shortcut;
 
 /**
- * Representiert ein Container (Speicherort) f�r eine Shortcut-Liste.
+ * Representiert ein Container (Speicherort) für eine Shortcut-Liste.
  *
  * @author Alexander Schulz
  * Date: 18.11.2012
@@ -20,12 +20,12 @@ public final class ShortcutContainer {
 
     private boolean visible = true;
 
-    // Erm�glicht in der Anwendung die Schreibzugriffe zu sperren, auch wenn DAO sie erlaubt.
-    // Andersherum kann der im DAO verweigerter Zugriff nat�rlich nicht freigegeben werden.
+    // Ermöglicht in der Anwendung die Schreibzugriffe zu sperren, auch wenn DAO sie erlaubt.
+    // Andersherum kann der im DAO verweigerter Zugriff natürlich nicht freigegeben werden.
     private boolean readOnly = false;
 
     /**
-     * Gesch�tzter Konsruktor.
+     * Geschützter Konsruktor.
      * @param dao ShortcutDAO
      * @param name Name/Neschreibung
      */
@@ -38,7 +38,7 @@ public final class ShortcutContainer {
 
     /**
      * Liefert den symbolischen Namen der Shortcut-Container.
-     * Ein Container enth�lt eine Liste der Shortcuts, die an einem bestimmten Ort gespeichert werden.
+     * Ein Container enthält eine Liste der Shortcuts, die an einem bestimmten Ort gespeichert werden.
      * Mehrere Container werden in einem Store zusammengefasst (s. ShortcutStore).
      * @return Container-Name
      */
@@ -79,9 +79,9 @@ public final class ShortcutContainer {
     }
 
     /**
-     * Gibt an, ob der Container beschreibbar ist (d.h. Elemente k�nnen hinzugef�gt, ge�ndert oder gel�scht werden).
-     * Das DAO ist vorrangig f�r die �nderbarkeit zust�ndig,
-     * daher wird f�r einen im DAO als nicht �nderbar definierten Container
+     * Gibt an, ob der Container beschreibbar ist (d.h. Elemente können hinzugefügt, geändert oder gelöscht werden).
+     * Das DAO ist vorrangig für die Änderbarkeit zuständig,
+     * daher wird für einen im DAO als nicht änderbar definierten Container
      * immer der Wert false geliefert.
      * @return true, wenn das Container beschreibbar ist
      */
@@ -92,20 +92,20 @@ public final class ShortcutContainer {
 
     /**
      * Erlaubt die �nerbarkeit des Containers zu definieren.
-     * Das DAO ist vorrangig f�r die �nderbarkeit zust�ndig,
-     * daher kann im DAO als nicht �nderbar definierter Container
-     * nicht nachtr�glich als beschreibbar umdefiniert werden.
+     * Das DAO ist vorrangig für die Änderbarkeit zuständig,
+     * daher kann im DAO als nicht änderbar definierter Container
+     * nicht nachträglich als beschreibbar umdefiniert werden.
      * 
-     * @param readOnly true, wenn �nderbar, fals sonst
+     * @param readOnly true, wenn änderbar, fals sonst
      */
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
 
     /**
-     * Liefert Liste aller gespeicherten Eintr�ge.
+     * Liefert Liste aller gespeicherten Einträge.
      * @throws DAOException Persistenz-Probleme
-     * @return Liste der Eintr�ge
+     * @return Liste der Einträge
      */
     public List<Shortcut> getShortcuts() throws DAOException {
         return this.getDAO().getShortcuts();
@@ -125,7 +125,7 @@ public final class ShortcutContainer {
     }
 
     /**
-     * Entfernt (l�scht) den �bergeben Shortcut.
+     * Entfernt (löscht) den übergeben Shortcut.
      * @param shortcut Shortcut-Eintrag
      * @return false, wenn Container nicht beschreibbar, true sonst.
      */
@@ -151,8 +151,8 @@ public final class ShortcutContainer {
     }
 
     /**
-     * F�gt alle Eintr�ge aus der gegebenen Liste zu den gespeicheren Eintr�gen hinzu.
-     * @param newList Liste der Eintr�ge
+     * Fügt alle Einträge aus der gegebenen Liste zu den gespeicheren Einträgen hinzu.
+     * @param newList Liste der Einträge
      * @return false, wenn Container nicht beschreibbar, true sonst.
      */
     public boolean mergeShortcuts(List<Shortcut> newList) throws DAOException {
@@ -164,7 +164,7 @@ public final class ShortcutContainer {
     }
 
     /**
-     * Entfernt alle gespeicherten Eintr�ge.
+     * Entfernt alle gespeicherten Einträge.
      * @return false, wenn Container nicht beschreibbar, true sonst.
      */
     public boolean removeAllShortcuts() throws DAOException {
