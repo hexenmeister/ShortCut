@@ -1,5 +1,6 @@
 package de.as.eclipse.shortcut.persist;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.as.eclipse.shortcut.business.Shortcut;
@@ -113,11 +114,12 @@ public final class ShortcutContainer {
 
     /**
      * Fügt ein neuen Eintrag hinzu.
+     * Operation wird nicht zugelassen, falls der Shortcut zu einem anderen Container zugeordnet ist.
      * @param shortcut Shortcut-Eintrag
-     * @return false, wenn Container nicht beschreibbar, true sonst.
+     * @return true, wenn Operation erfolgreich, false sonst (z.B.  Container nicht beschreibbar, oder falscher Container).
      */
     public boolean addShortcut(Shortcut shortcut) throws DAOException {
-        if (!this.isReadOnly()) {
+        if (!this.isReadOnly() && this.shortcutFactory.checkContainer(shortcut)) {
             this.getDAO().addShortcut(shortcut);
             return true;
         }
@@ -126,11 +128,12 @@ public final class ShortcutContainer {
 
     /**
      * Entfernt (löscht) den übergeben Shortcut.
+     * Operation wird nicht zugelassen, falls der Shortcut zu einem anderen Container zugeordnet ist.
      * @param shortcut Shortcut-Eintrag
-     * @return false, wenn Container nicht beschreibbar, true sonst.
+     * @return true, wenn Operation erfolgreich, false sonst (z.B.  Container nicht beschreibbar, oder falscher Container).
      */
     public boolean removeShortcut(Shortcut shortcut) throws DAOException {
-        if (!this.isReadOnly()) {
+        if (!this.isReadOnly() && this.shortcutFactory.checkContainer(shortcut)) {
             this.getDAO().removeShortcut(shortcut);
             return true;
         }
@@ -138,12 +141,13 @@ public final class ShortcutContainer {
     }
 
     /**
-     * Aktualisiert die Daten f�r ein gegebenen Eintrag.
+     * Aktualisiert die Daten für ein gegebenen Eintrag.
+     * Operation wird nicht zugelassen, falls der Shortcut zu einem anderen Container zugeordnet ist.
      * @param shortcut Shortcut-Eintrag
-     * @return false, wenn Container nicht beschreibbar, true sonst.
+     * @return true, wenn Operation erfolgreich, false sonst (z.B.  Container nicht beschreibbar, oder falscher Container).
      */
     public boolean updateShortcut(Shortcut shortcut) throws DAOException {
-        if (!this.isReadOnly()) {
+        if (!this.isReadOnly() && this.shortcutFactory.checkContainer(shortcut)) {
             this.getDAO().updateShortcut(shortcut);
             return true;
         }
@@ -152,10 +156,17 @@ public final class ShortcutContainer {
 
     /**
      * Fügt alle Einträge aus der gegebenen Liste zu den gespeicheren Einträgen hinzu.
+     * Ist auch dann möglich, falls die Shortcuts bereits einem anderen Container zugeordnet sind.
+     * In Letzten Fall werden die Einträge geklonnt und mit diesem Container verknüpft.
      * @param newList Liste der Einträge
      * @return false, wenn Container nicht beschreibbar, true sonst.
      */
-    public boolean mergeShortcuts(List<Shortcut> newList) throws DAOException {
+    public boolean mergeShortcuts(List<Shortcut> list) throws DAOException {
+        // ggf. Container korrigieren
+        List<Shortcut> newList = new ArrayList<Shortcut>(list.size());
+        for (Shortcut shortcut : list) {
+            newList.add(this.shortcutFactory.ensureCorrectContainer(shortcut));
+        }
         if (!this.isReadOnly()) {
             this.getDAO().mergeShortcuts(newList);
             return true;

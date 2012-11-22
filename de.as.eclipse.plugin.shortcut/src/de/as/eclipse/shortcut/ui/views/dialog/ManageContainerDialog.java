@@ -13,6 +13,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -25,7 +27,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
 import de.as.eclipse.shortcut.Activator;
+import de.as.eclipse.shortcut.persist.DAOException;
 import de.as.eclipse.shortcut.persist.ShortcutContainer;
+import de.as.eclipse.shortcut.persist.ShortcutFileDAO;
+import de.as.eclipse.shortcut.persist.ShortcutStore;
 
 public class ManageContainerDialog extends TrayDialog {
     private Table table;
@@ -59,7 +64,7 @@ public class ManageContainerDialog extends TrayDialog {
         // XXX: Beispiel: http://www.javadocexamples.com/java_source/org/eclipse/jdt/internal/debug/ui/propertypages/InstanceFilterEditor.java.html
         CheckboxTableViewer checkboxTableViewer = CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.SINGLE);
         this.table = checkboxTableViewer.getTable();
-        this.table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 5));
+        this.table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 7));
 
         checkboxTableViewer.setContentProvider(new IStructuredContentProvider() {
             @Override
@@ -140,27 +145,51 @@ public class ManageContainerDialog extends TrayDialog {
 
         Button btnCreate = new Button(container, SWT.NONE);
         GridData gd_btnCreate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnCreate.widthHint = 60;
+        gd_btnCreate.widthHint = 80;
         btnCreate.setLayoutData(gd_btnCreate);
         btnCreate.setText("Create");
 
-        Button btnImport = new Button(container, SWT.NONE);
-        GridData gd_btnImport = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnImport.widthHint = 60;
-        btnImport.setLayoutData(gd_btnImport);
-        btnImport.setText("Import");
-
         Button btnRemove = new Button(container, SWT.NONE);
         GridData gd_btnRemove = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnRemove.widthHint = 60;
+        gd_btnRemove.widthHint = 80;
         btnRemove.setLayoutData(gd_btnRemove);
         btnRemove.setText("Remove");
 
         Button btnDelete = new Button(container, SWT.NONE);
         GridData gd_btnDelete = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnDelete.widthHint = 60;
+        gd_btnDelete.widthHint = 80;
         btnDelete.setLayoutData(gd_btnDelete);
         btnDelete.setText("Delete");
+
+        Button btnImport = new Button(container, SWT.NONE);
+        GridData gd_btnImport = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gd_btnImport.widthHint = 80;
+        btnImport.setLayoutData(gd_btnImport);
+        btnImport.setText("Import");
+
+        Button btnExportToFile = new Button(container, SWT.NONE);
+        btnExportToFile.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                //TODO: File Dialog
+                if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
+                    ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+                    try {
+                        ShortcutContainer from = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
+                        ShortcutContainer to = shortcutStore.createNewContainer(new ShortcutFileDAO("d:\\test.xml"), "Kopie");
+                        shortcutStore.copyShortcuts(from, to);
+                    } catch (DAOException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
+        GridData gd_btnExportToFile = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gd_btnExportToFile.widthHint = 80;
+        btnExportToFile.setLayoutData(gd_btnExportToFile);
+        btnExportToFile.setText("Export to File");
+        new Label(container, SWT.NONE);
         new Label(container, SWT.NONE);
 
         return container;
@@ -180,7 +209,7 @@ public class ManageContainerDialog extends TrayDialog {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(450, 300);
+        return new Point(450, 336);
     }
 
 }

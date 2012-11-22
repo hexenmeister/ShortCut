@@ -104,14 +104,6 @@ public abstract class Shortcut {
         this.moreCommands = moreCommands;
     }
 
-    //    public String getParameters() {
-    //        return this.parameters;
-    //    }
-    //
-    //    public void setParameters(String parameters) {
-    //        this.parameters = parameters;
-    //    }
-
     public boolean isGrabOutput() {
         return this.grabOutput;
     }
@@ -144,6 +136,5 @@ public abstract class Shortcut {
         File f = new File(this.location);
         return f.exists() ? f.lastModified() : -1;
     }
-
 
 }

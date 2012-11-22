@@ -41,9 +41,20 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO implements IReloadab
             return null;
         }
 
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        Map<Integer, Shortcut> m = AbstractShortcutXmlDAO.readShortcuts(bufferedReader, this.getFactory());
-        return m;
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(reader);
+            Map<Integer, Shortcut> m = AbstractShortcutXmlDAO.readShortcuts(bufferedReader, this.getFactory());
+            return m;
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
     }
 
     @Override
@@ -56,8 +67,20 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO implements IReloadab
             e.printStackTrace();
             return;
         }
-        BufferedWriter bufferedWriter = new BufferedWriter(writer);
-        AbstractShortcutXmlDAO.writeShortcuts(shortcuts, ShortcutFileDAO.SHORTCUTS_TAG, bufferedWriter);
+
+        BufferedWriter bufferedWriter = null;
+        try {
+            bufferedWriter = new BufferedWriter(writer);
+            AbstractShortcutXmlDAO.writeShortcuts(shortcuts, ShortcutFileDAO.SHORTCUTS_TAG, bufferedWriter);
+        } finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
     }
 
     @Override

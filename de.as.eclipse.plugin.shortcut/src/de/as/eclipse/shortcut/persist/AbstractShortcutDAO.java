@@ -2,6 +2,7 @@ package de.as.eclipse.shortcut.persist;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,9 +72,16 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
     @Override
     public void mergeShortcuts(List<Shortcut> newList) throws DAOException {
         Map<Integer, Shortcut> m = this.getShortcutsMap();
+
         if (newList != null) {
+            if (m == null) {
+                // z.B. wenn die (Quell-)Datei nicht existiert.
+                // Map neu anlegen
+                m = new HashMap<Integer, Shortcut>();
+            }
+
             for (Shortcut newShortcut : newList) {
-                // Pr�fen, ob ein entsprechender Eintrag bereits vorliegt
+                // Prüfen, ob ein entsprechender Eintrag bereits vorliegt
                 if (!m.containsValue(newShortcut)) {
                     // ID erstellen / erneuern
                     newShortcut.setId(this.getNewId(m));
@@ -91,20 +99,20 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
 
     @Override
     public boolean isReadOnly() {
-        // Speicherung defaultm��ig zul�ssig
+        // Speicherung defaultmäßig zulässig
         return false;
     }
 
     /**
-     * Liefert eine noch ungebrauchte Integer-ID (verwendbar f�r einen neuen Eintrag).
-     * IDs werden intern ben�tigt, um ein gegebenen Shortcut-Eintrag wieder zu erkennen.
-     * @param m Map mit den aktuell existierenden Shortcut-Eintr�gen
+     * Liefert eine noch ungebrauchte Integer-ID (verwendbar für einen neuen Eintrag).
+     * IDs werden intern benötigt, um ein gegebenen Shortcut-Eintrag wieder zu erkennen.
+     * @param m Map mit den aktuell existierenden Shortcut-Einträgen
      * @return eine neue ID (Integer)
      */
     private Integer getNewId(Map<Integer, Shortcut> m) {
         int newId = m.size();
 
-        // Wenn die Anzahl der Elemente als ID bereits existiert, dann haben wir eine ID-L�cke, die gef�llt werden kann.
+        // Wenn die Anzahl der Elemente als ID bereits existiert, dann haben wir eine ID-Lücke, die gefüllt werden kann.
         while (m.get(newId) != null) {
             newId--;
         }

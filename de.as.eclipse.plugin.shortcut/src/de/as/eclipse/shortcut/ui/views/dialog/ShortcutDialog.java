@@ -109,7 +109,7 @@ public class ShortcutDialog extends TrayDialog {
             }
         });
         btnManageContainers.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        btnManageContainers.setText("Settings");
+        btnManageContainers.setText("Manage...");
 
         this.containerList = Activator.getDefault().getShortcutStore().getChangeableContainers();
         for (ShortcutContainer shortcutContainer : this.containerList) {
@@ -221,7 +221,7 @@ public class ShortcutDialog extends TrayDialog {
         this.fLocation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         Button btnLocation = new Button(comp, SWT.NONE);
-        btnLocation.setText(" Browse ");
+        btnLocation.setText(" Browse ...");
         btnLocation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label lblMoreCmds = new Label(comp, SWT.WRAP);
@@ -258,7 +258,7 @@ public class ShortcutDialog extends TrayDialog {
             }
         });
         btnWorkDir.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        btnWorkDir.setText("Browse");
+        btnWorkDir.setText("Browse...");
 
         Composite composite = new Composite(comp, SWT.NONE);
         composite.setLayout(new GridLayout(1, false));

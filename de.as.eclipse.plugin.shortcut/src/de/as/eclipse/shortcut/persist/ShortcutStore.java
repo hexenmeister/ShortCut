@@ -305,5 +305,16 @@ public class ShortcutStore {
         return null;
     }
 
+    /**
+     * Kopiert alle Shortcuts aus einem Container in ein anderes. Die Shortcuts werden geklonnt.
+     * Es ist nicht sinnvoll Quelle und Ziel gleich zu setzen, denn der Container bleibt dabei unverändert.
+     * @param from Quell-Container
+     * @param to Ziel-Container
+     * @throws DAOException falls dabei Probleme auftretten
+     */
+    public void copyShortcuts(ShortcutContainer from, ShortcutContainer to) throws DAOException {
+        to.mergeShortcuts(from.getShortcuts());
+    }
+
     // TODO: Filter-Methoden (definieren, abfragen, ...)
 }
