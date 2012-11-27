@@ -234,7 +234,7 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
                     shortcut.setId(i);
                 }
 
-                // Wenn ein ID-Map benötigt wird (ohne ID - kein EIntrag)
+                // Wenn ein ID-Map benötigt wird (ohne ID - kein Eintrag)
                 if (m != null) {
                     m.put(shortcut.getId(), shortcut);
                 }
