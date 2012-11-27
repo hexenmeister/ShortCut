@@ -64,6 +64,10 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
 
     private static final String RGB_TAG = "rgb";
 
+    private static final String VERSION_TAG = "version";
+
+    private static final String CURRENT_XML_DATA_VERSION = "1.0";
+
     /**
      * Überführt die Einträge aus der Map ins XML.
      * @param shortcuts Map mit en Einträgen (id, Item).
@@ -97,6 +101,10 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
             rootMemento.putString(AbstractShortcutXmlDAO.OS_TAG, System.getProperty("os.name") + ", " + System.getProperty("os.version") + ", " + System.getProperty("os.arch"));
             rootMemento.putString(AbstractShortcutXmlDAO.DATE_TAG, DateFormat.getDateTimeInstance().format(new Date()));
 
+            // Version
+            rootMemento.putString(AbstractShortcutXmlDAO.VERSION_TAG, AbstractShortcutXmlDAO.CURRENT_XML_DATA_VERSION);
+
+            // Data
             for (Integer id : shortcuts.keySet()) {
                 Shortcut shortcut = shortcuts.get(id);
                 // Einträge ohne ID ignorieren (darf eigentlich nicht passieren, wäre ein interner Fehler).
@@ -193,6 +201,11 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
         Map<Integer, Shortcut> m = new HashMap<Integer, Shortcut>();
         try {
             XMLMemento rootMemento = XMLMemento.createReadRoot(reader);
+
+            String version = rootMemento.getString(AbstractShortcutXmlDAO.VERSION_TAG);
+            if ((version != null) && !"1.0".equals(version)) {
+                throw new DAOException("unknown data version: "+version,null);
+            }
 
             IMemento[] mementos = rootMemento.getChildren(AbstractShortcutXmlDAO.SHORTCUT_TAG);
             for (int i = 0; i < mementos.length; i++) {
