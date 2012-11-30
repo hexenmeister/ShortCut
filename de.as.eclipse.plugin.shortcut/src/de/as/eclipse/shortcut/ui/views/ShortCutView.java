@@ -93,7 +93,7 @@ public class ShortCutView extends ViewPart {
 
     private static final String PRIORITY_COLUMN = "Priority";
 
-    private static final String LOCATION_COLUMN = "Location";
+    private static final String LOCATION_COLUMN = "Location/Script";
 
     //    private static final String MCMDS_COLUMN = "more commands";
 
