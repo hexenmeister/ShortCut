@@ -16,11 +16,9 @@ public abstract class Shortcut {
 
     private String category2;
 
-    private String location;
+    private String payload;
 
     private String workingDir;
-
-    private String moreCommands;
 
     private boolean grabOutput;
 
@@ -80,12 +78,12 @@ public abstract class Shortcut {
         this.group = group;
     }
 
-    public String getLocation() {
-        return this.location;
+    public String getPayload() {
+        return this.payload;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setPayload(String payload) {
+        this.payload = payload;
     }
 
     public String getWorkingDir() {
@@ -94,14 +92,6 @@ public abstract class Shortcut {
 
     public void setWorkingDir(String workingDir) {
         this.workingDir = workingDir;
-    }
-
-    public String getMoreCommands() {
-        return this.moreCommands;
-    }
-
-    public void setMoreCommands(String moreCommands) {
-        this.moreCommands = moreCommands;
     }
 
     public boolean isGrabOutput() {
@@ -124,16 +114,16 @@ public abstract class Shortcut {
     public boolean equals(Object arg0) {
         Shortcut sc = (Shortcut) arg0;
 
-        return (sc.getName().equals(this.name)) && (sc.getLocation().equals(this.location));
+        return (sc.getName().equals(this.name)) && (sc.getPayload().equals(this.payload));
     }
 
     public long getSize() {
-        File f = new File(this.location);
+        File f = new File(this.payload);
         return f.exists() ? f.length() : -1;
     }
 
     public long getLastModified() {
-        File f = new File(this.location);
+        File f = new File(this.payload);
         return f.exists() ? f.lastModified() : -1;
     }
 

@@ -95,7 +95,7 @@ public class ShortCutView extends ViewPart {
 
     private static final String LOCATION_COLUMN = "Location";
 
-    private static final String MCMDS_COLUMN = "more commands";
+    //    private static final String MCMDS_COLUMN = "more commands";
 
     private static final String WORKDIR_COLUMN = "Work dir";
 
@@ -107,7 +107,7 @@ public class ShortCutView extends ViewPart {
 
     //TODO: ColNames sollen auch im LabelProvider definiert werden (denn die Reihenfolge hiere wie da wichtig ist)
     private String[] columnNames = { ShortCutView.NAME_COLUMN, ShortCutView.GROUP_COLUMN, ShortCutView.CATEGORY1_COLUMN, ShortCutView.CATEGORY2_COLUMN, ShortCutView.PRIORITY_COLUMN,
-            ShortCutView.SIZE_COLUMN, ShortCutView.MCMDS_COLUMN,
+            ShortCutView.SIZE_COLUMN,
             ShortCutView.WORKDIR_COLUMN, ShortCutView.LAST_MODIFIED_COLUMN };
 
     @Override
@@ -266,7 +266,6 @@ public class ShortCutView extends ViewPart {
         this.table.getColumn(7).pack();
         this.table.getColumn(8).pack();
         this.table.getColumn(9).pack();
-        this.table.getColumn(10).pack();
     }
 
     public TableViewer getTableViewer() {
@@ -311,11 +310,11 @@ public class ShortCutView extends ViewPart {
         UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.PRIORITY_COLUMN, ShortCutView.PRIORITY_COLUMN, ShortcutSorterFactory.PRIORITY_SORTER, SWT.LEFT, SWT.UP, true);
         UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.CATEGORY1_COLUMN, ShortCutView.CATEGORY1_COLUMN, ShortcutSorterFactory.CATEGORY1_SORTER, SWT.LEFT, SWT.UP, true);
         UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.CATEGORY2_COLUMN, ShortCutView.CATEGORY2_COLUMN, ShortcutSorterFactory.CATEGORY2_SORTER, SWT.LEFT, SWT.UP, true);
-        UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.LOCATION_COLUMN, ShortCutView.LOCATION_COLUMN, ShortcutSorterFactory.LOCATION_SORTER, SWT.LEFT, SWT.UP, true);
+        UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.LOCATION_COLUMN, ShortCutView.LOCATION_COLUMN, ShortcutSorterFactory.PAYLOAD_SORTER, SWT.LEFT, SWT.UP, true);
         UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.WORKDIR_COLUMN, ShortCutView.WORKDIR_COLUMN, ShortcutSorterFactory.WORKDIR_SORTER, SWT.LEFT, SWT.UP, true);
         UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.SIZE_COLUMN, ShortCutView.SIZE_COLUMN, ShortcutSorterFactory.SIZE_SORTER, SWT.LEFT, SWT.UP, true);
         UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.LAST_MODIFIED_COLUMN, ShortCutView.LAST_MODIFIED_COLUMN, ShortcutSorterFactory.LASTMODIFIED_SORTER, SWT.LEFT, SWT.UP, true);
-        UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.MCMDS_COLUMN, ShortCutView.MCMDS_COLUMN, ShortcutSorterFactory.MCMDS_SORTER, SWT.LEFT, SWT.UP, true);
+        //        UIUtils.createTableColumn(ShortCutView.tableViewer, ShortCutView.MCMDS_COLUMN, ShortCutView.MCMDS_COLUMN, ShortcutSorterFactory.MCMDS_SORTER, SWT.LEFT, SWT.UP, true);
 
         this.table.setFont(new Font(this.table.getDisplay(), this.FONT_ARIAL_8));
 

@@ -45,7 +45,7 @@ public class ShortcutsLabelProvider extends LabelProvider implements ITableLabel
 
     public static int COL_INDEX_CATEGORY2 = ShortcutsLabelProvider.TTCNT++;
 
-    public static int COL_INDEX_LOCATION = ShortcutsLabelProvider.TTCNT++;
+    public static int COL_INDEX_PAYLOAD = ShortcutsLabelProvider.TTCNT++;
 
     public static int COL_INDEX_WORKING_DIR = ShortcutsLabelProvider.TTCNT++;
 
@@ -53,7 +53,7 @@ public class ShortcutsLabelProvider extends LabelProvider implements ITableLabel
 
     public static int COL_INDEX_LAST_MODIFIED = ShortcutsLabelProvider.TTCNT++;
 
-    public static int COL_INDEX_MORECOMMANDS = ShortcutsLabelProvider.TTCNT++;
+    //    public static int COL_INDEX_MORECOMMANDS = ShortcutsLabelProvider.TTCNT++;
 
     @Override
     public String getColumnText(Object element, int columnIndex) {
@@ -69,14 +69,18 @@ public class ShortcutsLabelProvider extends LabelProvider implements ITableLabel
             columnText = file.getCategory2();
         } else if (columnIndex == ShortcutsLabelProvider.COL_INDEX_PRIORITY) {
             columnText = file.getPriority();
-        } else if (columnIndex == ShortcutsLabelProvider.COL_INDEX_LOCATION) {
-            columnText = file.getLocation();
-        } else if (columnIndex == ShortcutsLabelProvider.COL_INDEX_MORECOMMANDS) {
-            columnText = file.getMoreCommands();
+        } else if (columnIndex == ShortcutsLabelProvider.COL_INDEX_PAYLOAD) {
+            columnText = file.getPayload();
             if (columnText != null) {
                 columnText = columnText.replaceAll("\r", "");
                 columnText = columnText.replaceAll("\n", " ; ");
             }
+            //        } else if (columnIndex == ShortcutsLabelProvider.COL_INDEX_MORECOMMANDS) {
+            //            columnText = file.getMoreCommands();
+            //            if (columnText != null) {
+            //                columnText = columnText.replaceAll("\r", "");
+            //                columnText = columnText.replaceAll("\n", " ; ");
+            //            }
         } else if (columnIndex == ShortcutsLabelProvider.COL_INDEX_WORKING_DIR) {
             columnText = file.getWorkingDir();
         } else if (columnIndex == ShortcutsLabelProvider.COL_INDEX_SIZE) {
@@ -120,8 +124,8 @@ public class ShortcutsLabelProvider extends LabelProvider implements ITableLabel
     }
 
     private Image getShortcutImage(Shortcut shortcut) {
-        String location = shortcut.getLocation();
-        int dotPosition = shortcut.getLocation().lastIndexOf(".");
+        String location = shortcut.getPayload();
+        int dotPosition = shortcut.getPayload().lastIndexOf(".");
         String extension = dotPosition == -1 ? "" : location.substring(dotPosition);
         return ShortcutsLabelProvider.getIcon(extension);
     }

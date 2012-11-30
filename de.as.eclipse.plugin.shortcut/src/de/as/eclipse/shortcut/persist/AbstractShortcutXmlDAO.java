@@ -31,42 +31,187 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
         super();
     }
 
-    // XML-Tags
-    private static final String CREATOR_TAG = "creator";
+    /**
+     * Abstrakte Basis für Klassen, die XML-Daten und die BE-Struktur ineinander überführen.
+     * Die Idee ist, mehrere solche Codecs gleichzeitig zu unterstützen, damit kann Datei-Format geändert werden,
+     * ohne dass eine ältere Ausgabe nicht mehr interpretierbar wird. Zurückgeschrieben wird immer in der aktuellen Version.
+     * Dies führt zu so einer Art automatischen Datenmigration.
+     *
+     * @author Alexander Schulz
+     * Date: 01.12.2012
+     */
+    private static abstract class AbstractShortcutXmlCodec {
 
-    private static final String OS_TAG = "os";
+        // XML-Tags
+        protected static final String ID_TAG = "id";
 
-    private static final String USER_TAG = "user";
+        protected static final String NAME_TAG = "name";
 
-    private static final String DATE_TAG = "date";
+        protected static final String GROUP_TAG = "group";
 
-    private static final String SHORTCUT_TAG = "shortcut";
+        protected static final String PRIORITY_TAG = "priority";
 
-    private static final String ID_TAG = "id";
+        protected static final String CATEGORY_TAG = "category";
 
-    private static final String NAME_TAG = "name";
+        protected static final String CATEGORY2_TAG = "category2";
 
-    private static final String GROUP_TAG = "group";
+        protected static final String WORKINGDIR_TAG = "workingdir";
 
-    private static final String LOCATION_TAG = "location";
+        protected static final String GRABOUTPUT_TAG = "graboutput";
 
-    private static final String PRIORITY_TAG = "priority";
+        protected static final String RGB_TAG = "rgb";
 
-    private static final String CATEGORY_TAG = "category";
+        /**
+         * Überführt Struktur ins XML
+         * @param shortcut Eingabe
+         * @param memento Ausgabe
+         * @throws DAOException bei Problemen
+         */
+        public abstract void writeShortcut(Shortcut shortcut, IMemento memento) throws DAOException;
 
-    private static final String CATEGORY2_TAG = "category2";
+        /**
+         * Überführt XML-Daten ins BE.
+         * @param shortcut Ausgabe
+         * @param memento Eingabe
+         * @throws DAOException bei Problemen
+         */
+        public abstract void readShortcut(Shortcut shortcut, IMemento memento) throws DAOException;
+    }
 
-    private static final String WORKINGDIR_TAG = "workingdir";
+    /**
+     * XMLCodec Version 1.0.
+     *
+     * @author Alexander Schulz
+     * Date: 01.12.2012
+     */
+    private static class ShortcutXmlCodecV1_0 extends AbstractShortcutXmlCodec {
 
-    private static final String MCMDS_TAG = "more_cmds";
+        protected static final String LOCATION_TAG = "location";
 
-    private static final String GRABOUTPUT_TAG = "graboutput";
+        protected static final String MCMDS_TAG = "more_cmds";
 
-    private static final String RGB_TAG = "rgb";
+        @Override
+        public void writeShortcut(Shortcut shortcut, IMemento memento) throws DAOException {
+            memento.putInteger(AbstractShortcutXmlCodec.ID_TAG, shortcut.getId());
+            memento.putString(AbstractShortcutXmlCodec.NAME_TAG, shortcut.getName());
+            memento.putString(AbstractShortcutXmlCodec.GROUP_TAG, shortcut.getGroup());
+            memento.putString(ShortcutXmlCodecV1_0.LOCATION_TAG, shortcut.getPayload());
+            memento.putString(AbstractShortcutXmlCodec.PRIORITY_TAG, shortcut.getPriority());
+            memento.putString(AbstractShortcutXmlCodec.CATEGORY_TAG, shortcut.getCategory1());
+            memento.putString(AbstractShortcutXmlCodec.CATEGORY2_TAG, shortcut.getCategory2());
+            memento.putString(AbstractShortcutXmlCodec.WORKINGDIR_TAG, shortcut.getWorkingDir());
+            // memento.putString(MCMDS_TAG, shortcut.getMoreCommands());
+            memento.putString(AbstractShortcutXmlCodec.RGB_TAG, shortcut.getRgb());
+            memento.putBoolean(AbstractShortcutXmlCodec.GRABOUTPUT_TAG, shortcut.isGrabOutput());
+        }
 
-    private static final String VERSION_TAG = "version";
+        @Override
+        public void readShortcut(Shortcut shortcut, IMemento memento) throws DAOException {
+            shortcut.setId(memento.getInteger(AbstractShortcutXmlCodec.ID_TAG));
+            shortcut.setName(memento.getString(AbstractShortcutXmlCodec.NAME_TAG));
+            shortcut.setGroup(memento.getString(AbstractShortcutXmlCodec.GROUP_TAG));
+            String payload = memento.getString(ShortcutXmlCodecV1_0.LOCATION_TAG);
+            String moreCommands = memento.getString(ShortcutXmlCodecV1_0.MCMDS_TAG);
+            if (moreCommands != null) {
+                payload+= "\r\n" + moreCommands;
+            }
+            shortcut.setPayload(payload);
+            shortcut.setPriority(memento.getString(AbstractShortcutXmlCodec.PRIORITY_TAG));
+            shortcut.setCategory1(memento.getString(AbstractShortcutXmlCodec.CATEGORY_TAG));
+            shortcut.setCategory2(memento.getString(AbstractShortcutXmlCodec.CATEGORY2_TAG));
+            shortcut.setWorkingDir(memento.getString(AbstractShortcutXmlCodec.WORKINGDIR_TAG));
+            shortcut.setRgb(memento.getString(AbstractShortcutXmlCodec.RGB_TAG));
+            Boolean grabOutput = memento.getBoolean(AbstractShortcutXmlCodec.GRABOUTPUT_TAG);
+            shortcut.setGrabOutput(grabOutput != null ? grabOutput : false);
+        }
+    }
 
-    private static final String CURRENT_XML_DATA_VERSION = "1.0";
+    /**
+     * XMLCodec Verion 1.1.
+     * Änderungen gegenüber v1.0:
+     *  - Umbenennung: 'location'->'payload'
+     *  - 'more_cmds' wird nicht mehr unterstützt (weitere Befehle können jetzt alle in 'payload' gespeichert werden.
+     *
+     * @author Alexander Schulz
+     * Date: 01.12.2012
+     */
+    private static class ShortcutXmlCodecV1_1 extends AbstractShortcutXmlCodec {
+
+        protected static final String PAYLOAD_TAG = "payload";
+
+        @Override
+        public void writeShortcut(Shortcut shortcut, IMemento memento) throws DAOException {
+            memento.putInteger(AbstractShortcutXmlCodec.ID_TAG, shortcut.getId());
+            memento.putString(AbstractShortcutXmlCodec.NAME_TAG, shortcut.getName());
+            memento.putString(AbstractShortcutXmlCodec.GROUP_TAG, shortcut.getGroup());
+            memento.putString(ShortcutXmlCodecV1_1.PAYLOAD_TAG, shortcut.getPayload());
+            memento.putString(AbstractShortcutXmlCodec.PRIORITY_TAG, shortcut.getPriority());
+            memento.putString(AbstractShortcutXmlCodec.CATEGORY_TAG, shortcut.getCategory1());
+            memento.putString(AbstractShortcutXmlCodec.CATEGORY2_TAG, shortcut.getCategory2());
+            memento.putString(AbstractShortcutXmlCodec.WORKINGDIR_TAG, shortcut.getWorkingDir());
+            memento.putString(AbstractShortcutXmlCodec.RGB_TAG, shortcut.getRgb());
+            memento.putBoolean(AbstractShortcutXmlCodec.GRABOUTPUT_TAG, shortcut.isGrabOutput());
+        }
+
+        @Override
+        public void readShortcut(Shortcut shortcut, IMemento memento) throws DAOException {
+            shortcut.setId(memento.getInteger(AbstractShortcutXmlCodec.ID_TAG));
+            shortcut.setName(memento.getString(AbstractShortcutXmlCodec.NAME_TAG));
+            shortcut.setGroup(memento.getString(AbstractShortcutXmlCodec.GROUP_TAG));
+            shortcut.setPayload(memento.getString(ShortcutXmlCodecV1_1.PAYLOAD_TAG));
+            shortcut.setPriority(memento.getString(AbstractShortcutXmlCodec.PRIORITY_TAG));
+            shortcut.setCategory1(memento.getString(AbstractShortcutXmlCodec.CATEGORY_TAG));
+            shortcut.setCategory2(memento.getString(AbstractShortcutXmlCodec.CATEGORY2_TAG));
+            shortcut.setWorkingDir(memento.getString(AbstractShortcutXmlCodec.WORKINGDIR_TAG));
+            shortcut.setRgb(memento.getString(AbstractShortcutXmlCodec.RGB_TAG));
+            Boolean grabOutput = memento.getBoolean(AbstractShortcutXmlCodec.GRABOUTPUT_TAG);
+            shortcut.setGrabOutput(grabOutput != null ? grabOutput : false);
+        }
+    }
+
+    /**
+     * Codec-Map
+     */
+    private static Map<String, AbstractShortcutXmlCodec> codecMap = new HashMap<String, AbstractShortcutXmlDAO.AbstractShortcutXmlCodec>();
+    static {
+        AbstractShortcutXmlDAO.codecMap.put("1.0", new ShortcutXmlCodecV1_0());
+        AbstractShortcutXmlDAO.codecMap.put("1.1", new ShortcutXmlCodecV1_1());
+    }
+
+    /**
+     * Aktuelle Codec-Version
+     */
+    private static final String CURRENT_CODEC_VERSION = "1.1";
+
+    /**
+     * Liefert zu der gewünschten Version passende Codec-Instanz (falls vorhanden).
+     * @param version Gewünschte Version
+     * @return Codec
+     * @throws DAOException wenn Version nicht bekannt ist
+     */
+    private static AbstractShortcutXmlCodec getCodec(String version) throws DAOException {
+        if (version == null) {
+            // Annahme für unbekannte Version
+            version = "1.0";
+        }
+        AbstractShortcutXmlCodec codec = AbstractShortcutXmlDAO.codecMap.get(version);
+        if (codec == null) {
+            throw new DAOException("unknown data version: " + version, null);
+        }
+        return codec;
+    }
+
+    protected static final String CREATOR_TAG = "creator";
+
+    protected static final String OS_TAG = "os";
+
+    protected static final String USER_TAG = "user";
+
+    protected static final String DATE_TAG = "date";
+
+    protected static final String SHORTCUT_TAG = "shortcut";
+
+    protected static final String VERSION_TAG = "version";
 
     /**
      * Überführt die Einträge aus der Map ins XML.
@@ -102,7 +247,9 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
             rootMemento.putString(AbstractShortcutXmlDAO.DATE_TAG, DateFormat.getDateTimeInstance().format(new Date()));
 
             // Version
-            rootMemento.putString(AbstractShortcutXmlDAO.VERSION_TAG, AbstractShortcutXmlDAO.CURRENT_XML_DATA_VERSION);
+            rootMemento.putString(AbstractShortcutXmlDAO.VERSION_TAG, AbstractShortcutXmlDAO.CURRENT_CODEC_VERSION);
+
+            AbstractShortcutXmlCodec codec = AbstractShortcutXmlDAO.getCodec(AbstractShortcutXmlDAO.CURRENT_CODEC_VERSION);
 
             // Data
             for (Integer id : shortcuts.keySet()) {
@@ -112,17 +259,7 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
                     continue;
                 }
                 IMemento itemMemento = rootMemento.createChild(AbstractShortcutXmlDAO.SHORTCUT_TAG);
-                itemMemento.putInteger(AbstractShortcutXmlDAO.ID_TAG, shortcut.getId());
-                itemMemento.putString(AbstractShortcutXmlDAO.NAME_TAG, shortcut.getName());
-                itemMemento.putString(AbstractShortcutXmlDAO.GROUP_TAG, shortcut.getGroup());
-                itemMemento.putString(AbstractShortcutXmlDAO.LOCATION_TAG, shortcut.getLocation());
-                itemMemento.putString(AbstractShortcutXmlDAO.PRIORITY_TAG, shortcut.getPriority());
-                itemMemento.putString(AbstractShortcutXmlDAO.CATEGORY_TAG, shortcut.getCategory1());
-                itemMemento.putString(AbstractShortcutXmlDAO.CATEGORY2_TAG, shortcut.getCategory2());
-                itemMemento.putString(AbstractShortcutXmlDAO.WORKINGDIR_TAG, shortcut.getWorkingDir());
-                itemMemento.putString(AbstractShortcutXmlDAO.MCMDS_TAG, shortcut.getMoreCommands());
-                itemMemento.putString(AbstractShortcutXmlDAO.RGB_TAG, shortcut.getRgb());
-                itemMemento.putBoolean(AbstractShortcutXmlDAO.GRABOUTPUT_TAG, shortcut.isGrabOutput());
+                codec.writeShortcut(shortcut, itemMemento);
             }
 
             try {
@@ -203,29 +340,17 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
             XMLMemento rootMemento = XMLMemento.createReadRoot(reader);
 
             String version = rootMemento.getString(AbstractShortcutXmlDAO.VERSION_TAG);
-            if ((version != null) && !"1.0".equals(version)) {
-                throw new DAOException("unknown data version: "+version,null);
-            }
+            AbstractShortcutXmlCodec codec = AbstractShortcutXmlDAO.getCodec(version);
 
             IMemento[] mementos = rootMemento.getChildren(AbstractShortcutXmlDAO.SHORTCUT_TAG);
             for (int i = 0; i < mementos.length; i++) {
                 IMemento memento = mementos[i];
 
                 Shortcut shortcut = factory.createNewShortcut();
-                shortcut.setId(memento.getInteger(AbstractShortcutXmlDAO.ID_TAG));
-                shortcut.setName(memento.getString(AbstractShortcutXmlDAO.NAME_TAG));
-                shortcut.setGroup(memento.getString(AbstractShortcutXmlDAO.GROUP_TAG));
-                shortcut.setLocation(memento.getString(AbstractShortcutXmlDAO.LOCATION_TAG));
-                shortcut.setPriority(memento.getString(AbstractShortcutXmlDAO.PRIORITY_TAG));
-                shortcut.setCategory1(memento.getString(AbstractShortcutXmlDAO.CATEGORY_TAG));
-                shortcut.setCategory2(memento.getString(AbstractShortcutXmlDAO.CATEGORY2_TAG));
-                shortcut.setWorkingDir(memento.getString(AbstractShortcutXmlDAO.WORKINGDIR_TAG));
-                shortcut.setMoreCommands(memento.getString(AbstractShortcutXmlDAO.MCMDS_TAG));
-                shortcut.setRgb(memento.getString(AbstractShortcutXmlDAO.RGB_TAG));
-                Boolean grabOutput = memento.getBoolean(AbstractShortcutXmlDAO.GRABOUTPUT_TAG);
-                shortcut.setGrabOutput(grabOutput != null ? grabOutput : false);
 
-                // Wegen  Migration der Daten der Vorversion: ggf. eine neue ID hier erstellen
+                codec.readShortcut(shortcut, memento);
+
+                // Wegen der Migration der Daten aus einer (alten) Vorversion: ggf. eine neue ID hier erstellen
                 if (shortcut.getId() == null) {
                     // Wenn Einträge ohne ID gefunden werden, dann dürften alle ohne ID sein (Daten der Vorversion).
                     // Einzelne Einträge ohne ID sind in der Speicherungsfunktion verhindert.

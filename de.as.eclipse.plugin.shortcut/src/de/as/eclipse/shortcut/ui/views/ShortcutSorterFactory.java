@@ -72,19 +72,19 @@ public class ShortcutSorterFactory {
         }
     };
 
-    public static final ShortcutSorterBase<String> LOCATION_SORTER = new ShortcutSorterBase<String>() {
+    public static final ShortcutSorterBase<String> PAYLOAD_SORTER = new ShortcutSorterBase<String>() {
         @Override
         protected String getComparisonProperty(Shortcut shortcut) {
-            return shortcut.getLocation();
+            return shortcut.getPayload();
         }
     };
 
-    public static final ShortcutSorterBase<String> MCMDS_SORTER = new ShortcutSorterBase<String>() {
-        @Override
-        protected String getComparisonProperty(Shortcut shortcut) {
-            return shortcut.getMoreCommands();
-        }
-    };
+    //    public static final ShortcutSorterBase<String> MCMDS_SORTER = new ShortcutSorterBase<String>() {
+    //        @Override
+    //        protected String getComparisonProperty(Shortcut shortcut) {
+    //            return shortcut.getMoreCommands();
+    //        }
+    //    };
 
     public static final ShortcutSorterBase<String> WORKDIR_SORTER = new ShortcutSorterBase<String>() {
         @Override
