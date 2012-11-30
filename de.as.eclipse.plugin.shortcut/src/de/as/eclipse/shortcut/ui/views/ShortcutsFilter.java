@@ -69,8 +69,8 @@ public class ShortcutsFilter extends ViewerFilter {
             }
         }
 
-        if (this.useLocation && (shortcut.getLocation() != null)) {
-            if (shortcut.getLocation().toLowerCase().contains(this.searchString)) {
+        if (this.useLocation && (shortcut.getPayload() != null)) {
+            if (shortcut.getPayload().toLowerCase().contains(this.searchString)) {
                 return true;
             }
         }

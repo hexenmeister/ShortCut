@@ -67,7 +67,7 @@ public class ShortcutsStyledLabelProvider extends StyledCellLabelProvider {
                 return true;
             }
         }
-        if (useLocation && (columnIndex == ShortcutsLabelProvider.COL_INDEX_LOCATION)) {
+        if (useLocation && (columnIndex == ShortcutsLabelProvider.COL_INDEX_PAYLOAD)) {
             return true;
         }
 

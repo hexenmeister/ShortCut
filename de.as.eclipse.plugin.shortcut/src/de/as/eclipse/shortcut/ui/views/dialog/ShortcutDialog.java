@@ -403,7 +403,7 @@ public class ShortcutDialog extends TrayDialog {
     private void applyValues(Shortcut shortcut) {
         this.fName.setText(shortcut.getName() != null ? shortcut.getName() : "");
         this.fGroup.setText(shortcut.getGroup() != null ? shortcut.getGroup() : "");
-        this.fLocation.setText(shortcut.getLocation() != null ? shortcut.getLocation() : "");
+        this.fLocation.setText(shortcut.getPayload() != null ? shortcut.getPayload() : "");
         this.fCategory1.setText(shortcut.getCategory1() != null ? shortcut.getCategory1() : "");
         this.fCategory2.setText(shortcut.getCategory2() != null ? shortcut.getCategory2() : "");
         this.fPrio.setText(shortcut.getPriority() != null ? shortcut.getPriority() : "");
@@ -488,14 +488,14 @@ public class ShortcutDialog extends TrayDialog {
                 name = this.fLocation.getText().substring(this.fLocation.getText().lastIndexOf("\\") + 1);
             }
 
-            shortcut.setName(name);
-            shortcut.setLocation(this.fLocation.getText());
+            shortcut.setName(name.trim());
+            shortcut.setPayload(this.fLocation.getText().trim());
             shortcut.setGroup(this.fGroup.getText());
             shortcut.setPriority(this.fPrio.getText());
             shortcut.setCategory1(this.fCategory1.getText());
             shortcut.setCategory2(this.fCategory2.getText());
             shortcut.setWorkingDir(this.fWorkDir.getText());
-            shortcut.setMoreCommands(this.fLocation.getText());
+            //            shortcut.setMoreCommands(this.fLocation.getText());
             shortcut.setRgb(this.cColor.getRgb());
             shortcut.setGrabOutput(this.btnGrabOutput.getSelection());
 

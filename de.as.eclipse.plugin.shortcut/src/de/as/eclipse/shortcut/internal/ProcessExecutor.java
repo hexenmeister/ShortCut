@@ -37,12 +37,12 @@ public class ProcessExecutor {
     //TODO: Start von exe-files mit Parameter (und ohne GrabInput) funktioniert nicht richtig.
 
     public static void launchShortcut(Shortcut shortcut) {
-        String location = shortcut.getLocation();
+        String location = shortcut.getPayload();
         //        String parameter = shortcut.getParameters();
         // TODO: MoreCommands-Feld
         String workDir = shortcut.getWorkingDir();
 
-        // Variablen aufl�sen
+        // Variablen auflösen
         IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
         try {
             location = variableManager.performStringSubstitution(location, false);
@@ -76,7 +76,7 @@ public class ProcessExecutor {
                 if (grabOutput) {
                     String name = shortcut.getName();
                     if ((name == null) || (name.trim().length() == 0)) {
-                        name = shortcut.getLocation();
+                        name = shortcut.getPayload();
                     }
                     console = ProcessExecutor.openNewConsole(name);
                     ProcessExecutor.showConsole(console);
@@ -101,8 +101,8 @@ public class ProcessExecutor {
                 StreamGrabber outputGrabber = new StreamGrabber(process.getInputStream(), console);
                 errorGrabber.start();
                 outputGrabber.start();
-                // TODO: Gedacht, um sp�ter in der Console Prozesse beenden zu k�nnen.
-                // Es muss noch eine sichere M�glichkeit geschaffen werden, die beendte Prozesse in jedem Fall zu entfernen.
+                // TODO: Gedacht, um später in der Console Prozesse beenden zu können.
+                // Es muss noch eine sichere Möglichkeit geschaffen werden, die beendte Prozesse in jedem Fall zu entfernen.
                 // Ansonsten entstehen Leaks (wie auch gerade jetzt).
                 ProcessExecutor.processList.add(process);
             } catch (IOException e) {
