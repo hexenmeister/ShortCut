@@ -253,7 +253,7 @@ public class ShortcutDialog extends TrayDialog {
                 String fullText = ShortcutDialog.this.fLocation.getText();
                 if ((text.length() == 0) && (fullText.length() > 0)) {
                     // wenn nichts selektiert, jedoch Feld nicht leer => erste zusammenhängende Zeichenkette suchen
-                    // (Anführungszeichen beachten) TODO
+                    // (Anführungszeichen beachten)
                     pos1 = 0;
                     pos2 = -1;
                     while ((pos1 < fullText.length()) && Character.isSpaceChar(fullText.charAt(pos1))) {
