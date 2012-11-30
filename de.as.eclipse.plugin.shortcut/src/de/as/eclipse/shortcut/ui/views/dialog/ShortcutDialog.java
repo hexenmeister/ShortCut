@@ -253,23 +253,72 @@ public class ShortcutDialog extends TrayDialog {
                 String fullText = ShortcutDialog.this.fLocation.getText();
                 if ((text.length() == 0) && (fullText.length() > 0)) {
                     // wenn nichts selektiert, jedoch Feld nicht leer => erste zusammenhängende Zeichenkette suchen
+                    // (Anführungszeichen beachten) TODO
                     pos1 = 0;
-                    pos2 = 0;
+                    pos2 = -1;
                     while ((pos1 < fullText.length()) && Character.isSpaceChar(fullText.charAt(pos1))) {
                         pos1++;
                     }
-                    pos2 = pos1 + 1;
-                    while ((pos2 < fullText.length()) && !Character.isSpaceChar(fullText.charAt(pos2))) {
+                    // Wenn das gefundene Wort mit Anführingszeichen anfängt, dann sein dazu Paar suchen
+                    // (Möglichkeit der mehrfachen ineinandergelegten Anführungszeichenpaare wird nicht berücksichtigt (wäre zu viel des Guten))
+                    if ((fullText.charAt(pos1) == '\"') || (fullText.charAt(pos1) == '\'')) {
+                        pos2 = fullText.indexOf(fullText.charAt(pos1), pos1 + 1);
+                    }
+
+                    // Prüfen, ob ein Anführungszeichen gefunden wurde
+                    if (pos2 < 0) {
+                        // Wenn nicht, dann Lerrzeichen suchen
+                        pos2 = pos1 + 1;
+                        while ((pos2 < fullText.length()) && !Character.isSpaceChar(fullText.charAt(pos2))) {
+                            pos2++;
+                        }
+                    } else {
                         pos2++;
                     }
                     ShortcutDialog.this.fLocation.setSelection(pos1, pos2);
                     selection = false;
                     text = ShortcutDialog.this.fLocation.getSelectionText();
+                } else {
+                    // Selection ggf. korrigieren (Leerzeichen, Anführungszeichen)
+                    // Leerzeichen ausschliessen, Anführungszeichen einschliessen
+                    // linker Rand
+                    if (((pos1 > 0) && (fullText.charAt(pos1) != '\"') && (fullText.charAt(pos1) != '\'')) && ((fullText.charAt(pos1 - 1) == '\"') || (fullText.charAt(pos1 - 1) == '\''))) {
+                        pos1--;
+                    }
+                    while (((pos1 >= 0) && (pos1 < fullText.length())) && Character.isSpaceChar(fullText.charAt(pos1))) {
+                        pos1++;
+                    }
+
+                    // rechter Rand
+                    if (((pos2 < (fullText.length() - 1)) && (fullText.charAt(pos2 - 1) != '\"') && (fullText.charAt(pos2 - 1) != '\''))
+                            && ((fullText.charAt(pos2) == '\"') || (fullText.charAt(pos2) == '\''))) {
+                        pos2++;
+                    }
+                    while (((pos2 > 0) && (pos2 <= fullText.length())) && Character.isSpaceChar(fullText.charAt(pos2 - 1))) {
+                        pos2--;
+                    }
+
+                    ShortcutDialog.this.fLocation.setSelection(pos1, pos2);
+                    text = ShortcutDialog.this.fLocation.getSelectionText();
                 }
+
                 // Text aus der Box verwenden
-                String path = ShortcutDialog.this.browseLocation(text.trim(), true);
+                text = text.trim();
+                // ggf. vorhandenen Anführungszeichen entfernen
+                if ((text.startsWith("\"") || text.startsWith("'"))) {
+                    text = text.substring(1, text.length());
+                }
+                if ((text.endsWith("\"") || text.endsWith("'"))) {
+                    text = text.substring(0, text.length() - 1);
+                }
+
+                String path = ShortcutDialog.this.browseLocation(text, true);
                 if (path != null) {
                     path = ShortcutDialog.this.substitureWorkspaceLocations(path);
+                    // Pfade mit Leerzeichen in Anführungszeichen nehmen
+                    if (path.indexOf(' ') >= 0) {
+                        path = "\"" + path + "\"";
+                    }
                     ShortcutDialog.this.fLocation.setText(fullText.substring(0, pos1) + path + fullText.substring(pos2));
                     if (selection) {
                         ShortcutDialog.this.fLocation.setSelection(pos1, pos1 + path.length());
