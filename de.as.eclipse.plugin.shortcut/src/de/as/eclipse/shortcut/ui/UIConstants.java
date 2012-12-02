@@ -18,6 +18,8 @@ public class UIConstants {
 
     public static final String ICON_CLEAR = "icons/clear.gif";
 
+    public static final String ICON_CONTAINERS = "icons/containers.png";
+
     public static final String DEFAULT_SHORTCUT_RGB = "#1E90FF";
     //    public static final String DEFAULT_SHORTCUT_RGB = "#901EFF";
     //    public static final String DEFAULT_SHORTCUT_RGB = "#FF1E90";
