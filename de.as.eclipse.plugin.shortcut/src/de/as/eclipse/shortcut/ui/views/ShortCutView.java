@@ -48,6 +48,7 @@ import de.as.eclipse.shortcut.internal.ProcessExecutor;
 import de.as.eclipse.shortcut.persist.DAOException;
 import de.as.eclipse.shortcut.ui.UIConstants;
 import de.as.eclipse.shortcut.ui.UIUtils;
+import de.as.eclipse.shortcut.ui.views.dialog.ManageContainerDialog;
 import de.as.eclipse.shortcut.ui.views.dialog.ShortcutDialog;
 
 public class ShortCutView extends ViewPart {
@@ -76,6 +77,8 @@ public class ShortCutView extends ViewPart {
     private Action addShortcut;
 
     private Action removeShortcut;
+
+    private Action manageContainers;
 
     private Action importShortcuts;
 
@@ -374,6 +377,7 @@ public class ShortCutView extends ViewPart {
         manager.add(this.editShortcut);
         manager.add(this.removeShortcut);
         manager.add(new Separator());
+        manager.add(this.manageContainers);
         manager.add(this.importShortcuts);
         manager.add(this.exportShortcuts);
         manager.add(new Separator());
@@ -384,9 +388,27 @@ public class ShortCutView extends ViewPart {
         manager.add(this.editShortcut);
         manager.add(this.removeShortcut);
         manager.add(new Separator());
+        manager.add(this.manageContainers);
+        manager.add(new Separator());
     }
 
     private void makeActions() {
+        this.manageContainers = new Action() {
+            @Override
+            public void run() {
+                // Container-Verwaltung
+                ManageContainerDialog mc = new ManageContainerDialog(ShortCutView.getShell());
+                mc.open();
+
+                ShortCutView.tableViewer.refresh();
+                ShortCutView.this.packColumns();
+                ShortCutView.this.updateTitle();
+            }
+        };
+        this.manageContainers.setText("Manage Containers");
+        this.manageContainers.setToolTipText("Create, add and delete shortcut containers");
+        this.manageContainers.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS));
+
         this.importShortcuts = new Action() {
             @Override
             public void run() {
