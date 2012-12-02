@@ -119,7 +119,7 @@ public class ShortCutView extends ViewPart {
         parent.setLayout(layout);
 
         Label searchLabel = new Label(parent, SWT.NONE);
-        searchLabel.setImage(Activator.getImageDescriptor(UIConstants.ICON_SEARCHFILE).createImage());
+        searchLabel.setImage(Activator.getImage(UIConstants.ICON_SEARCHFILE));
 
         final Combo searchText = new Combo(parent, SWT.SEARCH); //SWT.ICON_SEARCH
         searchText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -128,20 +128,20 @@ public class ShortCutView extends ViewPart {
 
         ToolBar toolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
         ToolItem btnBtnclearsearch = new ToolItem(toolBar, SWT.NONE);
-        btnBtnclearsearch.setImage(Activator.getImageDescriptor(UIConstants.ICON_CLEAR).createImage());
+        btnBtnclearsearch.setImage(Activator.getImage(UIConstants.ICON_CLEAR));
 
         final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
         //        toolBar.setMenu(new Menu(ShortCutView.tableViewer.getControl()));
         //        MenuItem item2 = new MenuItem(toolBar.getMenu(), SWT.PUSH);
 
         //        Label btnBtnclearsearch = new Label(parent, SWT.NONE);
-        //        btnBtnclearsearch.setImage(Activator.getImageDescriptor(UIConstants.ICON_CLEAR).createImage());
+        //        btnBtnclearsearch.setImage(Activator.getImage(UIConstants.ICON_CLEAR));
         Label filler = new Label(parent, SWT.NONE);
         filler.setText("   ");
 
         Label lblIn = new Label(parent, SWT.NONE);
         // lblIn.setText("in:");
-        lblIn.setImage(Activator.getImageDescriptor(UIConstants.ICON_CHOOSECOLUMNS).createImage());
+        lblIn.setImage(Activator.getImage(UIConstants.ICON_CHOOSECOLUMNS));
 
         final Button btnFilterName = new Button(parent, SWT.CHECK);
         btnFilterName.setText("Name");
