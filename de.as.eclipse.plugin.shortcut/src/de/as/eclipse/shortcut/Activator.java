@@ -1,6 +1,8 @@
 package de.as.eclipse.shortcut;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -19,6 +21,8 @@ public class Activator extends AbstractUIPlugin {
 
     // DAO instance
     private ShortcutStore store;
+
+    private static ImageRegistry imageRegistry = new ImageRegistry();
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -61,5 +65,23 @@ public class Activator extends AbstractUIPlugin {
      */
     public ShortcutStore getShortcutStore() {
         return this.store;
+    }
+
+    /**
+     * Liefert Image zu dem gegeben Pfad. Falls noch unbekannt, wird ein Image erstellt und dem ImageRegistry hinzugefügt.
+     * Registry kümmert sich um die Freigebe von Resources beim Zerstören von Display.
+     * Die erstellen Images belegen Resources während der ganzen Zeit wenn Eclipse läuft.
+     * Daher soll dieses Mechanismus sparsam verwendet werden.
+     * @param desc Pfad für Image Descriptor (auch Schlüssel für Registry)
+     * @return Image
+     */
+    public static Image getImage(String desc) {
+        Image image = Activator.imageRegistry.get(desc);
+        if (image == null) {
+            image = Activator.getImageDescriptor(desc).createImage();
+            Activator.imageRegistry.put(desc, image);
+        }
+
+        return image;
     }
 }
