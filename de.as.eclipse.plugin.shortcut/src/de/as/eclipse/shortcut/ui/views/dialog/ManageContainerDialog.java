@@ -17,6 +17,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -31,6 +32,7 @@ import de.as.eclipse.shortcut.persist.DAOException;
 import de.as.eclipse.shortcut.persist.ShortcutContainer;
 import de.as.eclipse.shortcut.persist.ShortcutFileDAO;
 import de.as.eclipse.shortcut.persist.ShortcutStore;
+import de.as.eclipse.shortcut.ui.UIConstants;
 
 public class ManageContainerDialog extends TrayDialog {
     private Table table;
@@ -43,6 +45,19 @@ public class ManageContainerDialog extends TrayDialog {
         super(parentShell);
         this.setHelpAvailable(false);
         this.setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.PRIMARY_MODAL);
+    }
+
+    @Override
+    protected void configureShell(Shell shell) {
+        super.configureShell(shell);
+
+        // Wunschgröße
+        int w = 600, h = 400;
+        // In der Mitte des Parent-Fensters ausrichten
+        Rectangle r = shell.getParent().getBounds();
+        shell.setBounds(r.x + ((r.width - w) / 2), r.y + ((r.height - h) / 2), w, h);
+
+        shell.setImage(Activator.getImage(UIConstants.ICON_CONTAINERS));
     }
 
     /**

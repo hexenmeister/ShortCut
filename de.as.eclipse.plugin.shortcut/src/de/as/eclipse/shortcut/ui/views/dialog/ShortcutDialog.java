@@ -43,6 +43,7 @@ import de.as.eclipse.shortcut.business.Shortcut;
 import de.as.eclipse.shortcut.persist.DAOException;
 import de.as.eclipse.shortcut.persist.ShortcutContainer;
 import de.as.eclipse.shortcut.persist.ShortcutStore;
+import de.as.eclipse.shortcut.ui.UIConstants;
 import de.as.eclipse.shortcut.ui.UIUtils;
 
 public class ShortcutDialog extends TrayDialog {
@@ -99,6 +100,8 @@ public class ShortcutDialog extends TrayDialog {
         } else {
             shell.setText("Edit Shortcut");
         }
+
+        shell.setImage(Activator.getImage(UIConstants.ICON_SHORTCUT));
     }
 
     @Override
