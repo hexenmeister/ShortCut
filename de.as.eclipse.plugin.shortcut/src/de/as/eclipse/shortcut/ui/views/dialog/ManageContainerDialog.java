@@ -3,14 +3,17 @@ package de.as.eclipse.shortcut.ui.views.dialog;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -36,6 +39,12 @@ import de.as.eclipse.shortcut.ui.UIConstants;
 
 public class ManageContainerDialog extends TrayDialog {
     private Table table;
+
+    private Button btnRemove;
+
+    private Button btnDelete;
+
+    private Button btnExportToFile;
 
     /**
      * Create the dialog.
@@ -121,6 +130,10 @@ public class ManageContainerDialog extends TrayDialog {
             public String getColumnText(Object arg0, int arg1) {
                 ShortcutContainer sc = (ShortcutContainer) arg0;
                 String colText = sc.getName();
+                ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+                if (shortcutStore.isDefault(sc)) {
+                    colText += " (default)";
+                }
                 if (sc.isReadOnly()) {
                     colText += " (read only)";
                 }
@@ -135,13 +148,13 @@ public class ManageContainerDialog extends TrayDialog {
 
         checkboxTableViewer.setCheckStateProvider(new ICheckStateProvider() {
             @Override
-            public boolean isGrayed(Object arg0) {
+            public boolean isGrayed(Object element) {
                 return false;
             }
 
             @Override
-            public boolean isChecked(Object arg0) {
-                ShortcutContainer sc = (ShortcutContainer) arg0;
+            public boolean isChecked(Object element) {
+                ShortcutContainer sc = (ShortcutContainer) element;
                 return sc.isVisible();
             }
         });
@@ -151,6 +164,14 @@ public class ManageContainerDialog extends TrayDialog {
             public void checkStateChanged(CheckStateChangedEvent event) {
                 ShortcutContainer sc = (ShortcutContainer) event.getElement();
                 sc.setVisible(event.getChecked());
+            }
+        });
+
+        checkboxTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                ManageContainerDialog.this.adjustButtonsEnabledStatus();
             }
         });
 
@@ -164,17 +185,32 @@ public class ManageContainerDialog extends TrayDialog {
         btnCreate.setLayoutData(gd_btnCreate);
         btnCreate.setText("Create");
 
-        Button btnRemove = new Button(container, SWT.NONE);
+        this.btnRemove = new Button(container, SWT.NONE);
+        this.btnRemove.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                //TODO
+                if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
+                    ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+                    ShortcutContainer container = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
+                    if (!shortcutStore.isDefault(container)) {
+                        shortcutStore.removeContainer(container);
+                    } else {
+                        MessageDialog.openError(ManageContainerDialog.this.getShell(), "Error", "Default-Container could not be removed");
+                    }
+                }
+            }
+        });
         GridData gd_btnRemove = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gd_btnRemove.widthHint = 80;
-        btnRemove.setLayoutData(gd_btnRemove);
-        btnRemove.setText("Remove");
+        this.btnRemove.setLayoutData(gd_btnRemove);
+        this.btnRemove.setText("Remove");
 
-        Button btnDelete = new Button(container, SWT.NONE);
+        this.btnDelete = new Button(container, SWT.NONE);
         GridData gd_btnDelete = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gd_btnDelete.widthHint = 80;
-        btnDelete.setLayoutData(gd_btnDelete);
-        btnDelete.setText("Delete");
+        this.btnDelete.setLayoutData(gd_btnDelete);
+        this.btnDelete.setText("Delete");
 
         Button btnImport = new Button(container, SWT.NONE);
         GridData gd_btnImport = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -182,8 +218,8 @@ public class ManageContainerDialog extends TrayDialog {
         btnImport.setLayoutData(gd_btnImport);
         btnImport.setText("Import");
 
-        Button btnExportToFile = new Button(container, SWT.NONE);
-        btnExportToFile.addSelectionListener(new SelectionAdapter() {
+        this.btnExportToFile = new Button(container, SWT.NONE);
+        this.btnExportToFile.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 //TODO: File Dialog
@@ -202,12 +238,35 @@ public class ManageContainerDialog extends TrayDialog {
         });
         GridData gd_btnExportToFile = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gd_btnExportToFile.widthHint = 80;
-        btnExportToFile.setLayoutData(gd_btnExportToFile);
-        btnExportToFile.setText("Export to File");
+        this.btnExportToFile.setLayoutData(gd_btnExportToFile);
+        this.btnExportToFile.setText("Export to File");
         new Label(container, SWT.NONE);
         new Label(container, SWT.NONE);
 
+        this.adjustButtonsEnabledStatus();
+
         return container;
+    }
+
+    private void adjustButtonsEnabledStatus() {
+        this.btnRemove.setEnabled(true);
+        this.btnDelete.setEnabled(true);
+        this.btnExportToFile.setEnabled(true);
+        if (this.table.getSelectionIndex() >= 0) {
+            ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+            ShortcutContainer container = shortcutStore.getContainers().get(this.table.getSelectionIndex());
+            if (shortcutStore.isDefault(container)) {
+                this.btnRemove.setEnabled(false);
+                this.btnDelete.setEnabled(false);
+            }
+            if (container.isReadOnly()) {
+                this.btnDelete.setEnabled(false);
+            }
+        } else {
+            this.btnRemove.setEnabled(false);
+            this.btnDelete.setEnabled(false);
+            this.btnExportToFile.setEnabled(false);
+        }
     }
 
     /**
