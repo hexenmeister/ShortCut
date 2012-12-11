@@ -41,6 +41,8 @@ public class ShortcutStore {
 
     private IPreferenceStore config;
 
+    private ShortcutContainer defaultContainer;
+
     /**
      * Constructor.
      */
@@ -56,10 +58,21 @@ public class ShortcutStore {
     protected void init() {
         // Default-Container, ist immer da und muss weder gespeichert, noch gelesen werden.
         ShortcutPreferenceStoreDAO dao = new ShortcutPreferenceStoreDAO(this.config);
-        ShortcutContainer defaultContainer = this.createNewContainer(dao, "Intern (Workspace)");
+        ShortcutContainer defaultContainer = this.createNewContainer(dao, "Internal / Workspace");
         this.containerList.add(defaultContainer);
+        this.defaultContainer = defaultContainer;
         // container lesen
         this.readContainerList();
+    }
+
+    /**
+     * Gibt an, ob der gegebener Container der Default-Container ist.
+     * Dieser ist der erste, immer vorhandene Container und kann nicht entfernt werden.
+     * @param container Vergleichscontainer
+     * @return true = default
+     */
+    public boolean isDefault(ShortcutContainer container) {
+        return this.defaultContainer == container;
     }
 
     /**
