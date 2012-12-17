@@ -104,13 +104,33 @@ public class UIUtils {
     }
 
     /**
+     * Öffnet ein Benutzerdialog zur Auswahl eines Verzeichnises.
+     * @param shell Parent-Shell
+     * @param path Initial-Pfad (Vorbelegung)
+     * @return ausgewählter Pfad, null beim Abbruch
+     */
+    public static String browseLocation(Shell shell, String path) {
+        return UIUtils.browseLocation(shell, path, false);
+    }
+
+    /**
+     * Öffnet ein Benutzerdialog zur Auswahl einer Datei.
+     * @param shell Parent-Shell
+     * @param path Initial-Pfad (Vorbelegung)
+     * @return ausgewählter Pfad zu der Datei, null beim Abbruch
+     */
+    public static String browseFile(Shell shell, String path) {
+        return UIUtils.browseLocation(shell, path, true);
+    }
+
+    /**
      * Öffnet ein Benutzerdialog zur Auswahl von Dateien/Verzeichnisen.
      * @param shell Parent-Shell
      * @param path Initial-Pfad (Vorbelegung)
      * @param selectFile true, wenn eine Datei ausgewählt werden soll, falsch, wenn ein Verzeichniss.
      * @return ausgewählter Pfad, null beim Abbruch
      */
-    public static String browseLocation(Shell shell, String path, boolean selectFile) {
+    private static String browseLocation(Shell shell, String path, boolean selectFile) {
         // Variablen auflösen
         IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
         try {
