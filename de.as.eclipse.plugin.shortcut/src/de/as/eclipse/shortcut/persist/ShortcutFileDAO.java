@@ -75,6 +75,7 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO implements IReloadab
         } finally {
             if (bufferedWriter != null) {
                 try {
+                    bufferedWriter.flush();
                     bufferedWriter.close();
                 } catch (IOException e) {
                     // ignore
