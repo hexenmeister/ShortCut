@@ -124,6 +124,26 @@ public class UIUtils {
     }
 
     /**
+     * Öffnet ein Benutzerdialog zur Auswahl einer Datei.
+     * Als Initialpfad wird entweder der gegebener Wert verwendet, oder, falls null, wird mit dem gegebenen Schlüssel versucht,
+     * den letzten verwendeten Wert zu ermitteln.
+     * @param storageId Schlüssel, mit dem der ausgewälter Wert gesucht und ggf. wiedergespeichert wird.
+     * @param shell Parent-Shell
+     * @param path Initial-Pfad (Vorbelegung), falls null, wird versucht, den letzten gespeicherten Wert zu verwenden
+     * @return ausgewählter Pfad zu der Datei, null beim Abbruch
+     */
+    public static String browseFile(String storageId, Shell shell, String path) {
+        if (path == null) {
+            path = Activator.getDefault().getPreferenceStore().getString("storage.path.file." + storageId);
+        }
+        String ret = UIUtils.browseFile(shell, path);
+        if (ret != null) {
+            Activator.getDefault().getPreferenceStore().setValue("storage.path.file." + storageId, ret);
+        }
+        return ret;
+    }
+
+    /**
      * Öffnet ein Benutzerdialog zur Auswahl von Dateien/Verzeichnisen.
      * @param shell Parent-Shell
      * @param path Initial-Pfad (Vorbelegung)
