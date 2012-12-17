@@ -81,6 +81,11 @@ public class UIUtils {
         }
     }
 
+    /**
+     * Erstellt eine der Eingabe entsprechende Instanz der SWT-Klasse RGB.
+     * @param rgb String in Form '#FFFFFF'. Falls null, wird default-Wert zurückgegeben (s. UIConstants).
+     * @return RGB
+     */
     public static RGB decodeColor(String rgb) {
         if (rgb == null) {
             rgb = UIConstants.DEFAULT_SHORTCUT_RGB;
