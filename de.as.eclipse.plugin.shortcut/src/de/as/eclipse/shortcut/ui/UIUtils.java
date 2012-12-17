@@ -29,6 +29,9 @@ public class UIUtils {
 
     // convenience methods
 
+    private static final String HISTORY_ITEMS_LIST = "history.items.list.";
+    private static final String STORAGE_LAST_FILE_PATH = "storage.last.file.path.";
+
     public static TableSortSelectionListener createTableColumn(TableViewer viewer, String text, String tooltip, InvertableSorter<Shortcut> sorter, int style, int initialDirection,
             boolean keepDirection) {
         TableColumn column = new TableColumn(viewer.getTable(), style);
@@ -68,11 +71,11 @@ public class UIUtils {
             }
         }
 
-        Activator.getDefault().getPreferenceStore().setValue("history.items.list." + comboName, itemsStr.toString());
+        Activator.getDefault().getPreferenceStore().setValue(HISTORY_ITEMS_LIST + comboName, itemsStr.toString());
     }
 
     public static void readHistoryItems(String comboName, Combo combo) {
-        String itemsStr = Activator.getDefault().getPreferenceStore().getString("history.items.list." + comboName);
+        String itemsStr = Activator.getDefault().getPreferenceStore().getString(HISTORY_ITEMS_LIST + comboName);
         combo.removeAll();
         if (itemsStr != null) {
             for (StringTokenizer st = new StringTokenizer(itemsStr, ","); st.hasMoreElements();) {
@@ -134,11 +137,11 @@ public class UIUtils {
      */
     public static String browseFile(String storageId, Shell shell, String path) {
         if (path == null) {
-            path = Activator.getDefault().getPreferenceStore().getString("storage.path.file." + storageId);
+            path = Activator.getDefault().getPreferenceStore().getString(STORAGE_LAST_FILE_PATH + storageId);
         }
         String ret = UIUtils.browseFile(shell, path);
         if (ret != null) {
-            Activator.getDefault().getPreferenceStore().setValue("storage.path.file." + storageId, ret);
+            Activator.getDefault().getPreferenceStore().setValue(STORAGE_LAST_FILE_PATH + storageId, ret);
         }
         return ret;
     }
