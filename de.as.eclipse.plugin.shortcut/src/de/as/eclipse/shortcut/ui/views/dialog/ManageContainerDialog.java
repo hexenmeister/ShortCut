@@ -36,6 +36,7 @@ import de.as.eclipse.shortcut.persist.ShortcutContainer;
 import de.as.eclipse.shortcut.persist.ShortcutFileDAO;
 import de.as.eclipse.shortcut.persist.ShortcutStore;
 import de.as.eclipse.shortcut.ui.UIConstants;
+import de.as.eclipse.shortcut.ui.UIUtils;
 
 public class ManageContainerDialog extends TrayDialog {
     private Table table;
@@ -222,16 +223,18 @@ public class ManageContainerDialog extends TrayDialog {
         this.btnExportToFile.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                //TODO: File Dialog
-                if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
-                    ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
-                    try {
-                        ShortcutContainer from = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
-                        ShortcutContainer to = shortcutStore.createNewContainer(new ShortcutFileDAO("d:\\test.xml"), "Kopie");
-                        shortcutStore.copyShortcuts(from, to);
-                    } catch (DAOException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                String path = UIUtils.browseFile("container.export.file", ManageContainerDialog.this.getShell(), null);
+                if (path != null) {
+                    if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
+                        ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+                        try {
+                            ShortcutContainer from = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
+                            ShortcutContainer to = shortcutStore.createNewContainer(new ShortcutFileDAO(path), "Copie of " + from.getName());
+                            shortcutStore.copyShortcuts(from, to);
+                        } catch (DAOException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
                     }
                 }
             }
