@@ -7,10 +7,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.variables.IStringVariableManager;
-import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
@@ -32,8 +29,6 @@ import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -315,7 +310,7 @@ public class ShortcutDialog extends TrayDialog {
                     text = text.substring(0, text.length() - 1);
                 }
 
-                String path = ShortcutDialog.this.browseLocation(text, true);
+                String path = UIUtils.browseLocation(ShortcutDialog.this.getShell(), text, true);
                 if (path != null) {
                     path = ShortcutDialog.this.substitureWorkspaceLocations(path);
                     // Pfade mit Leerzeichen in Anführungszeichen nehmen
@@ -344,7 +339,7 @@ public class ShortcutDialog extends TrayDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // Text aus der Box verwenden
-                String path = ShortcutDialog.this.browseLocation(ShortcutDialog.this.fWorkDir.getText(), false);
+                String path = UIUtils.browseLocation(ShortcutDialog.this.getShell(), ShortcutDialog.this.fWorkDir.getText(), false);
                 if (path != null) {
                     // Parentverzeichnis suchen
                     File f = new File(path);
@@ -414,62 +409,6 @@ public class ShortcutDialog extends TrayDialog {
         //        this.fLocation.setText(shortcut.getMoreCommands() != null ? shortcut.getMoreCommands() : "");
         this.cColor.setRgb(shortcut.getRgb());
         this.btnGrabOutput.setSelection(shortcut.isGrabOutput());
-    }
-
-    /**
-     * �ffnet ein Benutzerdialog zur Auswahl von Dateien/Verzeichnisen.
-     * @param path Initial-Pfad (Vorbelegung)
-     * @param selectFile true, wenn eine Datei ausgew�hlt werden soll, falsch, wenn ein Verzeichniss.
-     * @return ausgew�hlter Pfad
-     */
-    private String browseLocation(String path, boolean selectFile) {
-        // Variablen auflösen
-        IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
-        try {
-            path = variableManager.performStringSubstitution(path, false);
-        } catch (CoreException e1) {
-            // ignore
-        }
-
-        // Prüfen, ob es eine Datei/Verzeichnis ist
-        File f = new File(path);
-        File orig = f;
-        // ggf. Probieren in der Hierarchie ein existierendes Verzeichnis zu finden
-        while ((f != null) && !f.exists()) {
-            f = f.getParentFile();
-        }
-        // Prüfen, ob etwas gefunden wurde und ggf. das letze Verzeichnis nehmen
-        if (f != null) {
-            if (f.isFile()) {
-                f = f.getParentFile();
-            }
-        }
-
-        if (selectFile) {
-            FileDialog dialog = new FileDialog(this.getShell());
-
-            // Zweite Prüfung wegen getParent vorher notwendig
-            if (f != null) {
-                dialog.setFilterPath(f.getAbsolutePath());
-            }
-
-            // Name der Datei vorbelegen
-            if ((orig != null) && (f != null) && !f.getAbsoluteFile().equals(orig.getAbsoluteFile())) {
-                dialog.setFileName(orig.getName());
-            }
-
-            String ret = dialog.open();
-            return ret;
-        } else {
-            DirectoryDialog dialog = new DirectoryDialog(this.getShell());
-
-            // Zweite Pr�fung wegen getParent vorher notwendig
-            if (f != null) {
-                dialog.setFilterPath(f.getAbsolutePath());
-            }
-            String ret = dialog.open();
-            return ret;
-        }
     }
 
     @Override
