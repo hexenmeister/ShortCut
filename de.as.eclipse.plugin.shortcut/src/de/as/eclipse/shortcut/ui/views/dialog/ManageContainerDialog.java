@@ -228,6 +228,7 @@ public class ManageContainerDialog extends TrayDialog {
                     if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
                         ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
                         try {
+                            // TODO: Prüfen, ob die Datei bereits existiert, in diesem Fall Bestätigung abfragen
                             ShortcutContainer from = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
                             ShortcutContainer to = shortcutStore.createNewContainer(new ShortcutFileDAO(path), "Copie of " + from.getName());
                             shortcutStore.copyShortcuts(from, to);
