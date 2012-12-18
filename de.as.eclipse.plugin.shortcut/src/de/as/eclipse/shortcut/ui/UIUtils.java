@@ -181,6 +181,7 @@ public class UIUtils {
         }
 
         if (selectFile) {
+            // Styles: SAVE, OPEN, MULTI
             FileDialog dialog = new FileDialog(shell, style);
             //dialog.setText("???");
             // Zweite Prüfung wegen getParent vorher notwendig
@@ -196,7 +197,8 @@ public class UIUtils {
             String ret = dialog.open();
             return ret;
         } else {
-            DirectoryDialog dialog = new DirectoryDialog(shell, style);
+            // DirectoryDialog unterstützt keine Styles
+            DirectoryDialog dialog = new DirectoryDialog(shell);
             //dialog.setText("???");
             // Zweite Prüfung wegen getParent vorher notwendig
             if (f != null) {
