@@ -1,5 +1,6 @@
 package de.as.eclipse.shortcut.ui.views.dialog;
 
+import java.io.File;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -223,12 +224,20 @@ public class ManageContainerDialog extends TrayDialog {
         this.btnExportToFile.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                // XXX: NiceToHave: Vorschlag für Dateinamen setzen: <ContainerName>.xml
                 String path = UIUtils.browseFile("container.export.file", ManageContainerDialog.this.getShell(), null, SWT.SAVE);
                 if (path != null) {
                     if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
                         ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
                         try {
-                            // TODO: Prüfen, ob die Datei bereits existiert, in diesem Fall Bestätigung abfragen
+                            // Prüfen, ob die Datei bereits existiert, in diesem Fall Bestätigung abfragen
+                            File f = new File(path);
+                            if (f.exists() && f.isFile()) {
+                                boolean doOveride = MessageDialog.openConfirm(ManageContainerDialog.this.getShell(), "File allready exist", "This file already exists, are you sure to overwrite it?");
+                                if (!doOveride) {
+                                    return;
+                                }
+                            }
                             ShortcutContainer from = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
                             ShortcutContainer to = shortcutStore.createNewContainer(new ShortcutFileDAO(path), "Copie of " + from.getName());
                             shortcutStore.copyShortcuts(from, to);
