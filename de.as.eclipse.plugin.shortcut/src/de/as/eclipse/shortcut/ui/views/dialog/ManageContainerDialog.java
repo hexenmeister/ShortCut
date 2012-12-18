@@ -231,6 +231,7 @@ public class ManageContainerDialog extends TrayDialog {
                             ShortcutContainer from = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
                             ShortcutContainer to = shortcutStore.createNewContainer(new ShortcutFileDAO(path), "Copie of " + from.getName());
                             shortcutStore.copyShortcuts(from, to);
+                            MessageDialog.openInformation(ManageContainerDialog.this.getShell(), "Export successful", "Container was successful exported to file:\n" + path);
                         } catch (DAOException e1) {
                             // TODO Auto-generated catch block
                             e1.printStackTrace();
