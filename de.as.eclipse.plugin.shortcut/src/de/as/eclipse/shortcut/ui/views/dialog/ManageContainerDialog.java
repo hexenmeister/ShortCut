@@ -233,7 +233,7 @@ public class ManageContainerDialog extends TrayDialog {
                             // Prüfen, ob die Datei bereits existiert, in diesem Fall Bestätigung abfragen
                             File f = new File(path);
                             if (f.exists() && f.isFile()) {
-                                boolean doOveride = MessageDialog.openConfirm(ManageContainerDialog.this.getShell(), "File allready exist", "This file already exists, are you sure to overwrite it?");
+                                boolean doOveride = MessageDialog.openConfirm(ManageContainerDialog.this.getShell(), "File allready exists", "This file already exists, are you sure to overwrite it?");
                                 if (!doOveride) {
                                     return;
                                 }
