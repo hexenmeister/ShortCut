@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -110,11 +111,10 @@ public class UIUtils {
      * Öffnet ein Benutzerdialog zur Auswahl eines Verzeichnises.
      * @param shell Parent-Shell
      * @param path Initial-Pfad (Vorbelegung)
-     * @param style SWT-Style
      * @return ausgewählter Pfad, null beim Abbruch
      */
-    public static String browseLocation(Shell shell, String path, int style) {
-        return UIUtils.browseLocation(shell, path, false, style);
+    public static String browseLocation(Shell shell, String path) {
+        return UIUtils.browseLocation(shell, path, false, SWT.NONE);
     }
 
     /**

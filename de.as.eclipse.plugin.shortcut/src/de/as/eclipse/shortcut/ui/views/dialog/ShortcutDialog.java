@@ -339,7 +339,7 @@ public class ShortcutDialog extends TrayDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // Text aus der Box verwenden
-                String path = UIUtils.browseLocation(ShortcutDialog.this.getShell(), ShortcutDialog.this.fWorkDir.getText(), SWT.OPEN);
+                String path = UIUtils.browseLocation(ShortcutDialog.this.getShell(), ShortcutDialog.this.fWorkDir.getText());
                 if (path != null) {
                     // Parentverzeichnis suchen
                     File f = new File(path);
