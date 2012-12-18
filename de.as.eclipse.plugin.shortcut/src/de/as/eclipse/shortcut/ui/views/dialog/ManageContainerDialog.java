@@ -223,7 +223,7 @@ public class ManageContainerDialog extends TrayDialog {
         this.btnExportToFile.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String path = UIUtils.browseFile("container.export.file", ManageContainerDialog.this.getShell(), null);
+                String path = UIUtils.browseFile("container.export.file", ManageContainerDialog.this.getShell(), null, SWT.SAVE);
                 if (path != null) {
                     if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
                         ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();

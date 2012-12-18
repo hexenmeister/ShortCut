@@ -310,7 +310,7 @@ public class ShortcutDialog extends TrayDialog {
                     text = text.substring(0, text.length() - 1);
                 }
 
-                String path = UIUtils.browseFile(ShortcutDialog.this.getShell(), text);
+                String path = UIUtils.browseFile(ShortcutDialog.this.getShell(), text, SWT.OPEN);
                 if (path != null) {
                     path = ShortcutDialog.this.substitureWorkspaceLocations(path);
                     // Pfade mit Leerzeichen in Anführungszeichen nehmen
@@ -339,7 +339,7 @@ public class ShortcutDialog extends TrayDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // Text aus der Box verwenden
-                String path = UIUtils.browseLocation(ShortcutDialog.this.getShell(), ShortcutDialog.this.fWorkDir.getText());
+                String path = UIUtils.browseLocation(ShortcutDialog.this.getShell(), ShortcutDialog.this.fWorkDir.getText(), SWT.OPEN);
                 if (path != null) {
                     // Parentverzeichnis suchen
                     File f = new File(path);

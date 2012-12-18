@@ -71,11 +71,11 @@ public class UIUtils {
             }
         }
 
-        Activator.getDefault().getPreferenceStore().setValue(HISTORY_ITEMS_LIST + comboName, itemsStr.toString());
+        Activator.getDefault().getPreferenceStore().setValue(UIUtils.HISTORY_ITEMS_LIST + comboName, itemsStr.toString());
     }
 
     public static void readHistoryItems(String comboName, Combo combo) {
-        String itemsStr = Activator.getDefault().getPreferenceStore().getString(HISTORY_ITEMS_LIST + comboName);
+        String itemsStr = Activator.getDefault().getPreferenceStore().getString(UIUtils.HISTORY_ITEMS_LIST + comboName);
         combo.removeAll();
         if (itemsStr != null) {
             for (StringTokenizer st = new StringTokenizer(itemsStr, ","); st.hasMoreElements();) {
@@ -110,20 +110,22 @@ public class UIUtils {
      * Öffnet ein Benutzerdialog zur Auswahl eines Verzeichnises.
      * @param shell Parent-Shell
      * @param path Initial-Pfad (Vorbelegung)
+     * @param style SWT-Style
      * @return ausgewählter Pfad, null beim Abbruch
      */
-    public static String browseLocation(Shell shell, String path) {
-        return UIUtils.browseLocation(shell, path, false);
+    public static String browseLocation(Shell shell, String path, int style) {
+        return UIUtils.browseLocation(shell, path, false, style);
     }
 
     /**
      * Öffnet ein Benutzerdialog zur Auswahl einer Datei.
      * @param shell Parent-Shell
      * @param path Initial-Pfad (Vorbelegung)
+     * @param style SWT-Style
      * @return ausgewählter Pfad zu der Datei, null beim Abbruch
      */
-    public static String browseFile(Shell shell, String path) {
-        return UIUtils.browseLocation(shell, path, true);
+    public static String browseFile(Shell shell, String path, int style) {
+        return UIUtils.browseLocation(shell, path, true, style);
     }
 
     /**
@@ -133,15 +135,16 @@ public class UIUtils {
      * @param storageId Schlüssel, mit dem der ausgewälter Wert gesucht und ggf. wiedergespeichert wird.
      * @param shell Parent-Shell
      * @param path Initial-Pfad (Vorbelegung), falls null, wird versucht, den letzten gespeicherten Wert zu verwenden
+     * @param style SWT-Style
      * @return ausgewählter Pfad zu der Datei, null beim Abbruch
      */
-    public static String browseFile(String storageId, Shell shell, String path) {
+    public static String browseFile(String storageId, Shell shell, String path, int style) {
         if (path == null) {
-            path = Activator.getDefault().getPreferenceStore().getString(STORAGE_LAST_FILE_PATH + storageId);
+            path = Activator.getDefault().getPreferenceStore().getString(UIUtils.STORAGE_LAST_FILE_PATH + storageId);
         }
-        String ret = UIUtils.browseFile(shell, path);
+        String ret = UIUtils.browseFile(shell, path, style);
         if (ret != null) {
-            Activator.getDefault().getPreferenceStore().setValue(STORAGE_LAST_FILE_PATH + storageId, ret);
+            Activator.getDefault().getPreferenceStore().setValue(UIUtils.STORAGE_LAST_FILE_PATH + storageId, ret);
         }
         return ret;
     }
@@ -151,9 +154,10 @@ public class UIUtils {
      * @param shell Parent-Shell
      * @param path Initial-Pfad (Vorbelegung)
      * @param selectFile true, wenn eine Datei ausgewählt werden soll, falsch, wenn ein Verzeichniss.
+     * @param style SWT-Style
      * @return ausgewählter Pfad, null beim Abbruch
      */
-    private static String browseLocation(Shell shell, String path, boolean selectFile) {
+    private static String browseLocation(Shell shell, String path, boolean selectFile, int style) {
         // Variablen auflösen
         IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
         try {
@@ -177,7 +181,7 @@ public class UIUtils {
         }
 
         if (selectFile) {
-            FileDialog dialog = new FileDialog(shell);
+            FileDialog dialog = new FileDialog(shell, style);
 
             // Zweite Prüfung wegen getParent vorher notwendig
             if (f != null) {
@@ -192,7 +196,7 @@ public class UIUtils {
             String ret = dialog.open();
             return ret;
         } else {
-            DirectoryDialog dialog = new DirectoryDialog(shell);
+            DirectoryDialog dialog = new DirectoryDialog(shell, style);
 
             // Zweite Prüfung wegen getParent vorher notwendig
             if (f != null) {
