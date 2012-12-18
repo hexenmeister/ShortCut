@@ -182,7 +182,7 @@ public class UIUtils {
 
         if (selectFile) {
             FileDialog dialog = new FileDialog(shell, style);
-
+            //dialog.setText("???");
             // Zweite Prüfung wegen getParent vorher notwendig
             if (f != null) {
                 dialog.setFilterPath(f.getAbsolutePath());
@@ -197,7 +197,7 @@ public class UIUtils {
             return ret;
         } else {
             DirectoryDialog dialog = new DirectoryDialog(shell, style);
-
+            //dialog.setText("???");
             // Zweite Prüfung wegen getParent vorher notwendig
             if (f != null) {
                 dialog.setFilterPath(f.getAbsolutePath());
