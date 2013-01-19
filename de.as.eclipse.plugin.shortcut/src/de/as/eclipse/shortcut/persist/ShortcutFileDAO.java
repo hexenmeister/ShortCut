@@ -36,7 +36,7 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO implements IReloadab
         try {
             reader = new FileReader(this.containerFile);
         } catch (FileNotFoundException e) {
-            // TODO Exception behandlung
+            // TODO Exception Behandlung
             e.printStackTrace();
             return null;
         }
