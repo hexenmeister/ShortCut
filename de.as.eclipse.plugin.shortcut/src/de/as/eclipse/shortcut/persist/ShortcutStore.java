@@ -45,8 +45,9 @@ public class ShortcutStore {
 
     /**
      * Constructor.
+     * @throws DAOException Persistenz-Probleme
      */
-    public ShortcutStore(IPreferenceStore configPreferenceStore) {
+    public ShortcutStore(IPreferenceStore configPreferenceStore) throws DAOException {
         this.config = configPreferenceStore;
         this.containerList = new ArrayList<ShortcutContainer>();
         this.init();
@@ -54,8 +55,9 @@ public class ShortcutStore {
 
     /**
      * Initialisierung.
+     * @throws DAOException Persistenz-Probleme
      */
-    protected void init() {
+    protected void init() throws DAOException {
         // Default-Container, ist immer da und muss weder gespeichert, noch gelesen werden.
         ShortcutPreferenceStoreDAO dao = new ShortcutPreferenceStoreDAO(this.config);
         ShortcutContainer defaultContainer = this.createNewContainer(dao, "Internal / Workspace");
@@ -188,6 +190,9 @@ public class ShortcutStore {
                     } catch (InvocationTargetException e) {
                         // TODO vernünftige Exception und/oder Log?
                         e.printStackTrace();
+                    } catch (DAOException e) {
+                        // Darf eigentlich nicht passieren. Ggf. Log und eine vernünftige Exception
+                        e.printStackTrace();
                     }
                 }
             }
@@ -213,8 +218,9 @@ public class ShortcutStore {
      * @param dao DAO
      * @param name Name
      * @return Instanz
+     * @throws DAOException Persistenz-Probleme
      */
-    public ShortcutContainer createNewContainer(IShortcutDAO dao, String name) {
+    public ShortcutContainer createNewContainer(IShortcutDAO dao, String name) throws DAOException {
         return new ShortcutContainer(dao, name);
     }
 

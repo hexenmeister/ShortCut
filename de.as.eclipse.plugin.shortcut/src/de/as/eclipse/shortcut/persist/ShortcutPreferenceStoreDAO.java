@@ -50,7 +50,7 @@ public class ShortcutPreferenceStoreDAO extends AbstractShortcutXmlDAO {
      */
     @Override
     protected void saveShortcuts(Map<Integer, Shortcut> shortcuts) throws DAOException {
-        this.getStore().setValue(ShortcutPreferenceStoreDAO.ROOT_TAG, AbstractShortcutXmlDAO.writeShortcutsToString(shortcuts, ShortcutPreferenceStoreDAO.SHORTCUTS_TAG));
+        this.getStore().setValue(ShortcutPreferenceStoreDAO.ROOT_TAG, AbstractShortcutXmlDAO.writeShortcutsToString(shortcuts, ShortcutPreferenceStoreDAO.SHORTCUTS_TAG, this.getContainerName()));
     }
 
 }

@@ -203,6 +203,8 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
 
     protected static final String CREATOR_TAG = "creator";
 
+    protected static final String CONTAINER_NAME_TAG = "name";
+
     protected static final String OS_TAG = "os";
 
     protected static final String USER_TAG = "user";
@@ -217,13 +219,14 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
      * Überführt die Einträge aus der Map ins XML.
      * @param shortcuts Map mit en Einträgen (id, Item).
      * @param root Root-Tag
+     * @param containerName Name des Containers
      * @return String mit XML-Daten
      * @throws DAOException Persistenz-Probleme
      */
-    protected static String writeShortcutsToString(Map<Integer, Shortcut> shortcuts, String root) throws DAOException {
+    protected static String writeShortcutsToString(Map<Integer, Shortcut> shortcuts, String root, String containerName) throws DAOException {
         if (shortcuts != null) {
             StringWriter writer = new StringWriter();
-            AbstractShortcutXmlDAO.writeShortcuts(shortcuts, root, writer);
+            AbstractShortcutXmlDAO.writeShortcuts(shortcuts, root, containerName, writer);
             return writer.toString();
         }
         return "";
@@ -233,15 +236,17 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
      * Überführt die Einträge aus der Map ins XML und schreibt diese in ein gegebenen Writer.
      * @param shortcuts Map mit en Einträgen (id, Item).
      * @param root Root-Tag
+     * @param containerName Name des Containers
      * @param writer Ziel für die Datenspeicherung
      * @throws DAOException Persistenz-Probleme
      */
-    protected static void writeShortcuts(Map<Integer, Shortcut> shortcuts, String root, Writer writer) throws DAOException {
+    protected static void writeShortcuts(Map<Integer, Shortcut> shortcuts, String root, String containerName, Writer writer) throws DAOException {
         if (shortcuts != null) {
             XMLMemento rootMemento = XMLMemento.createWriteRoot(root);
 
             // Prolog
             rootMemento.putString(AbstractShortcutXmlDAO.CREATOR_TAG, "ShortCut");
+            rootMemento.putString(AbstractShortcutXmlDAO.CONTAINER_NAME_TAG, containerName);
             rootMemento.putString(AbstractShortcutXmlDAO.USER_TAG, System.getProperty("user.name"));
             rootMemento.putString(AbstractShortcutXmlDAO.OS_TAG, System.getProperty("os.name") + ", " + System.getProperty("os.version") + ", " + System.getProperty("os.arch"));
             rootMemento.putString(AbstractShortcutXmlDAO.DATE_TAG, DateFormat.getDateTimeInstance().format(new Date()));

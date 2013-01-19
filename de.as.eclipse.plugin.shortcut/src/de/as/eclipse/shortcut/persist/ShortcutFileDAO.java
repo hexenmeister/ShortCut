@@ -71,7 +71,7 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO implements IReloadab
         BufferedWriter bufferedWriter = null;
         try {
             bufferedWriter = new BufferedWriter(writer);
-            AbstractShortcutXmlDAO.writeShortcuts(shortcuts, ShortcutFileDAO.SHORTCUTS_TAG, bufferedWriter);
+            AbstractShortcutXmlDAO.writeShortcuts(shortcuts, ShortcutFileDAO.SHORTCUTS_TAG, this.getContainerName(), bufferedWriter);
         } finally {
             if (bufferedWriter != null) {
                 try {

@@ -29,12 +29,39 @@ public final class ShortcutContainer {
      * Geschützter Konsruktor.
      * @param dao ShortcutDAO
      * @param name Name/Neschreibung
+     * @throws DAOException Persistenz-Probleme
      */
-    ShortcutContainer(IShortcutDAO dao, String name) {
+    ShortcutContainer(IShortcutDAO dao, String name) throws DAOException {
+        this.checkContainerName(name);
+        this.checkDao(dao);
+
         this.dao = dao;
-        this.shortcutFactory = new ShortcutFactory(this);
-        dao.init(this.shortcutFactory);
         this.name = name;
+        this.shortcutFactory = new ShortcutFactory(this);
+        dao.init(this.shortcutFactory, name);
+    }
+
+    /**
+     * Prüft, ob der Name nicht null und nicht leer ist.
+     * @param name Container name
+     */
+    private void checkContainerName(String name) {
+        if (name == null) {
+            throw new RuntimeException("Container name may not be null");
+        }
+        if (name.trim().length() == 0) {
+            throw new RuntimeException("Container name may not be empty");
+        }
+    }
+
+    /**
+     * Prüft, ob DAO nicht null ist.
+     * @param dao DAO
+     */
+    private void checkDao(IShortcutDAO dao) {
+        if (dao == null) {
+            throw new RuntimeException("DAO may not be null");
+        }
     }
 
     /**
@@ -45,6 +72,19 @@ public final class ShortcutContainer {
      */
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * Bietet die Möglichkeit, den Container zu umbenennen.
+     * @param name Der neue containername.
+     * @throws DAOException Persistenz-Probleme
+     */
+    public void rename(String name) throws DAOException {
+        this.checkContainerName(name);
+
+        this.name = name;
+        // Den neuen Namen dem DAO mitteilen
+        this.dao.init(this.shortcutFactory, name);
     }
 
     //    private ShortcutFactory getShortcutFactory() {

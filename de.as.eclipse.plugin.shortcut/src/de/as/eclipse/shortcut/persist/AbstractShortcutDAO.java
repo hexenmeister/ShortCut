@@ -26,13 +26,24 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
 
     private ShortcutFactory factory;
 
+    private String containerName;
+
     @Override
-    public void init(ShortcutFactory factory) {
+    public void init(ShortcutFactory factory, String containerName) throws DAOException {
+        boolean firstInit = this.factory == null;
         this.factory = factory;
+        this.containerName = containerName;
+        if (!firstInit) {
+            this.updateShortcuts();
+        }
     }
 
     protected ShortcutFactory getFactory() {
         return this.factory;
+    }
+
+    protected String getContainerName() {
+        return this.containerName;
     }
 
     @Override
@@ -121,6 +132,15 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
     }
 
     /**
+     * Schreibt die Datensätze neu.
+     * @throws DAOException Persistenz-Probleme
+     */
+    protected void updateShortcuts() throws DAOException {
+        Map<Integer, Shortcut> m = this.getShortcutsMap();
+        this.saveShortcuts(m);
+    }
+
+    /**
      * Liest die persistierte Einträge.
      * @throws DAOException Persistenz-Probleme
      * @return Map mit den Einträgen.
@@ -130,6 +150,7 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
     /**
      * Persistiert die Einträge.
      * @param shortcuts Map mit den Einträgen
+     * @throws DAOException Persistenz-Probleme
      */
     protected abstract void saveShortcuts(Map<Integer, Shortcut> shortcuts) throws DAOException;
 

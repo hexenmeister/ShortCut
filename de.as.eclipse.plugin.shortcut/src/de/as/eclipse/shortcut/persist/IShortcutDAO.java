@@ -63,8 +63,10 @@ public interface IShortcutDAO {
      * Initialisiert das DAO mit einer passenden Fabrik.
      * Wird zu internen Zwecken gebraucht.
      * @param factory ShortcutFactory
+     * @param containerName Name des Containers (kann ggf. mitgespeichert werden).
+     * @throws DAOException Persistenz-Probleme
      */
-    public abstract void init(ShortcutFactory factory);
+    public abstract void init(ShortcutFactory factory, String containerName) throws DAOException;
 
 
 }
