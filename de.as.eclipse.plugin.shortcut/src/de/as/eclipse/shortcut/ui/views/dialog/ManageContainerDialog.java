@@ -2,6 +2,7 @@ package de.as.eclipse.shortcut.ui.views.dialog;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.Table;
 
 import de.as.eclipse.shortcut.Activator;
 import de.as.eclipse.shortcut.persist.DAOException;
+import de.as.eclipse.shortcut.persist.IShortcutDAO;
 import de.as.eclipse.shortcut.persist.ShortcutContainer;
 import de.as.eclipse.shortcut.persist.ShortcutFileDAO;
 import de.as.eclipse.shortcut.persist.ShortcutStore;
@@ -47,6 +49,8 @@ public class ManageContainerDialog extends TrayDialog {
     private Button btnDelete;
 
     private Button btnExportToFile;
+
+    private CheckboxTableViewer checkboxTableViewer;
 
     /**
      * Create the dialog.
@@ -88,11 +92,11 @@ public class ManageContainerDialog extends TrayDialog {
         new Label(container, SWT.NONE);
 
         // XXX: Beispiel: http://www.javadocexamples.com/java_source/org/eclipse/jdt/internal/debug/ui/propertypages/InstanceFilterEditor.java.html
-        CheckboxTableViewer checkboxTableViewer = CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.SINGLE);
-        this.table = checkboxTableViewer.getTable();
+        this.checkboxTableViewer = CheckboxTableViewer.newCheckList(container, SWT.BORDER | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.SINGLE);
+        this.table = this.checkboxTableViewer.getTable();
         this.table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 7));
 
-        checkboxTableViewer.setContentProvider(new IStructuredContentProvider() {
+        this.checkboxTableViewer.setContentProvider(new IStructuredContentProvider() {
             @Override
             public void dispose() {
             }
@@ -109,7 +113,7 @@ public class ManageContainerDialog extends TrayDialog {
 
         });
 
-        checkboxTableViewer.setLabelProvider(new ITableLabelProvider() {
+        this.checkboxTableViewer.setLabelProvider(new ITableLabelProvider() {
             // TODO : change anonym classes to nested
             @Override
             public void removeListener(ILabelProviderListener arg0) {
@@ -148,7 +152,7 @@ public class ManageContainerDialog extends TrayDialog {
             }
         });
 
-        checkboxTableViewer.setCheckStateProvider(new ICheckStateProvider() {
+        this.checkboxTableViewer.setCheckStateProvider(new ICheckStateProvider() {
             @Override
             public boolean isGrayed(Object element) {
                 return false;
@@ -161,7 +165,7 @@ public class ManageContainerDialog extends TrayDialog {
             }
         });
 
-        checkboxTableViewer.addCheckStateListener(new ICheckStateListener() {
+        this.checkboxTableViewer.addCheckStateListener(new ICheckStateListener() {
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
                 ShortcutContainer sc = (ShortcutContainer) event.getElement();
@@ -169,7 +173,7 @@ public class ManageContainerDialog extends TrayDialog {
             }
         });
 
-        checkboxTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        this.checkboxTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
@@ -177,11 +181,15 @@ public class ManageContainerDialog extends TrayDialog {
             }
         });
 
-        // It egal was, Hauptsache nicht null, da sonst nichts angezeigt wird
-        // (Content/LabelProvider definieren den sichtbaren Inhalt).
-        checkboxTableViewer.setInput(Activator.getDefault().getShortcutStore().getContainers());
+        this.refreshContainerList();
 
         Button btnCreate = new Button(container, SWT.NONE);
+        btnCreate.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                // TODO
+            }
+        });
         GridData gd_btnCreate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gd_btnCreate.widthHint = 80;
         btnCreate.setLayoutData(gd_btnCreate);
@@ -197,6 +205,7 @@ public class ManageContainerDialog extends TrayDialog {
                     ShortcutContainer container = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
                     if (!shortcutStore.isDefault(container)) {
                         shortcutStore.removeContainer(container);
+                        ManageContainerDialog.this.refreshContainerList();
                     } else {
                         MessageDialog.openError(ManageContainerDialog.this.getShell(), "Error", "Default-Container could not be removed");
                     }
@@ -209,12 +218,38 @@ public class ManageContainerDialog extends TrayDialog {
         this.btnRemove.setText("Remove");
 
         this.btnDelete = new Button(container, SWT.NONE);
+        this.btnDelete.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                // TODO
+            }
+        });
         GridData gd_btnDelete = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gd_btnDelete.widthHint = 80;
         this.btnDelete.setLayoutData(gd_btnDelete);
         this.btnDelete.setText("Delete");
 
         Button btnImport = new Button(container, SWT.NONE);
+        btnImport.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String path = UIUtils.browseFile("container.import.file", ManageContainerDialog.this.getShell(), null, SWT.OPEN);
+                if (path != null) {
+                    ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+                    try {
+                        ShortcutFileDAO dao = new ShortcutFileDAO(path);
+                        Map<String, String> prologMap = dao.readProlog();
+                        ShortcutContainer container = shortcutStore.createNewContainer(dao, prologMap.get(IShortcutDAO.CONTAINER_NAME_TAG));
+                        // TODO: Prüfung, ob derselbe (nicht nur gleichbenannte) Container bereits in der Liste vorhanden ist
+                        shortcutStore.addContainer(container);
+                        ManageContainerDialog.this.refreshContainerList();
+                    } catch (DAOException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
         GridData gd_btnImport = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gd_btnImport.widthHint = 80;
         btnImport.setLayoutData(gd_btnImport);
@@ -233,8 +268,8 @@ public class ManageContainerDialog extends TrayDialog {
                             // Prüfen, ob die Datei bereits existiert, in diesem Fall Bestätigung abfragen
                             File f = new File(path);
                             if (f.exists() && f.isFile()) {
-                                boolean doOveride = MessageDialog.openConfirm(ManageContainerDialog.this.getShell(), "File allready exists", "This file already exists, are you sure to overwrite it?");
-                                if (!doOveride) {
+                                boolean doOverride = MessageDialog.openConfirm(ManageContainerDialog.this.getShell(), "File allready exists", "This file already exists, are you sure to overwrite it?");
+                                if (!doOverride) {
                                     return;
                                 }
                             }
@@ -260,6 +295,12 @@ public class ManageContainerDialog extends TrayDialog {
         this.adjustButtonsEnabledStatus();
 
         return container;
+    }
+
+    private void refreshContainerList() {
+        // Content/LabelProvider definieren den sichtbaren Inhalt.
+        this.checkboxTableViewer.setInput(Activator.getDefault().getShortcutStore().getContainers());
+        this.checkboxTableViewer.refresh();
     }
 
     private void adjustButtonsEnabledStatus() {
