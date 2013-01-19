@@ -24,6 +24,8 @@ import de.as.eclipse.shortcut.business.Shortcut;
  */
 public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
 
+    protected static final String SHORTCUT_TAG = "shortcut";
+
     /**
      * Default-Constructor.
      */
@@ -201,20 +203,6 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
         return codec;
     }
 
-    protected static final String CREATOR_TAG = "creator";
-
-    protected static final String CONTAINER_NAME_TAG = "name";
-
-    protected static final String OS_TAG = "os";
-
-    protected static final String USER_TAG = "user";
-
-    protected static final String DATE_TAG = "date";
-
-    protected static final String SHORTCUT_TAG = "shortcut";
-
-    protected static final String VERSION_TAG = "version";
-
     /**
      * Überführt die Einträge aus der Map ins XML.
      * @param shortcuts Map mit en Einträgen (id, Item).
@@ -245,14 +233,14 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
             XMLMemento rootMemento = XMLMemento.createWriteRoot(root);
 
             // Prolog
-            rootMemento.putString(AbstractShortcutXmlDAO.CREATOR_TAG, "ShortCut");
-            rootMemento.putString(AbstractShortcutXmlDAO.CONTAINER_NAME_TAG, containerName);
-            rootMemento.putString(AbstractShortcutXmlDAO.USER_TAG, System.getProperty("user.name"));
-            rootMemento.putString(AbstractShortcutXmlDAO.OS_TAG, System.getProperty("os.name") + ", " + System.getProperty("os.version") + ", " + System.getProperty("os.arch"));
-            rootMemento.putString(AbstractShortcutXmlDAO.DATE_TAG, DateFormat.getDateTimeInstance().format(new Date()));
+            rootMemento.putString(IShortcutDAO.CREATOR_TAG, "ShortCut");
+            rootMemento.putString(IShortcutDAO.CONTAINER_NAME_TAG, containerName);
+            rootMemento.putString(IShortcutDAO.USER_TAG, System.getProperty("user.name"));
+            rootMemento.putString(IShortcutDAO.OS_TAG, System.getProperty("os.name") + ", " + System.getProperty("os.version") + ", " + System.getProperty("os.arch"));
+            rootMemento.putString(IShortcutDAO.DATE_TAG, DateFormat.getDateTimeInstance().format(new Date()));
 
             // Version
-            rootMemento.putString(AbstractShortcutXmlDAO.VERSION_TAG, AbstractShortcutXmlDAO.CURRENT_CODEC_VERSION);
+            rootMemento.putString(IShortcutDAO.VERSION_TAG, AbstractShortcutXmlDAO.CURRENT_CODEC_VERSION);
 
             AbstractShortcutXmlCodec codec = AbstractShortcutXmlDAO.getCodec(AbstractShortcutXmlDAO.CURRENT_CODEC_VERSION);
 
@@ -344,7 +332,7 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
         try {
             XMLMemento rootMemento = XMLMemento.createReadRoot(reader);
 
-            String version = rootMemento.getString(AbstractShortcutXmlDAO.VERSION_TAG);
+            String version = rootMemento.getString(IShortcutDAO.VERSION_TAG);
             AbstractShortcutXmlCodec codec = AbstractShortcutXmlDAO.getCodec(version);
 
             IMemento[] mementos = rootMemento.getChildren(AbstractShortcutXmlDAO.SHORTCUT_TAG);

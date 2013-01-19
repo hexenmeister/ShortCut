@@ -53,4 +53,11 @@ public class ShortcutPreferenceStoreDAO extends AbstractShortcutXmlDAO {
         this.getStore().setValue(ShortcutPreferenceStoreDAO.ROOT_TAG, AbstractShortcutXmlDAO.writeShortcutsToString(shortcuts, ShortcutPreferenceStoreDAO.SHORTCUTS_TAG, this.getContainerName()));
     }
 
+    @Override
+    public Map<String, String> readProlog() throws DAOException {
+        String stringData = this.getStore().getString(ShortcutPreferenceStoreDAO.ROOT_TAG);
+        Map<String, String> m = AbstractShortcutXmlDAO.readPrologFromString(stringData);
+        return m;
+    }
+
 }

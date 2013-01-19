@@ -1,6 +1,7 @@
 package de.as.eclipse.shortcut.persist;
 
 import java.util.List;
+import java.util.Map;
 
 import de.as.eclipse.shortcut.business.Shortcut;
 
@@ -11,6 +12,38 @@ import de.as.eclipse.shortcut.business.Shortcut;
  * Date: 18.11.2012
  */
 public interface IShortcutDAO {
+
+    // Prolog-Tags.
+
+    /**
+     * Prolog-Tag: Ersteller-Programm.
+     */
+    public static final String CREATOR_TAG = "creator";
+
+    /**
+     * Prolog-Tag: Container-Name.
+     */
+    public static final String CONTAINER_NAME_TAG = "name";
+
+    /**
+     * Prolog-Tag: OS (Betriebsystem, unter dem das Container erstellt wurde.)
+     */
+    public static final String OS_TAG = "os";
+
+    /**
+     * Prolog-Tag: Angemeldeter OS-Benutzer (der das Container erstellt hat.)
+     */
+    public static final String USER_TAG = "user";
+
+    /**
+     * Prolog-Tag: Datum der letzten Änderung.
+     */
+    public static final String DATE_TAG = "date";
+
+    /**
+     * Prolog-Tag: Container-Format-Version.
+     */
+    public static final String VERSION_TAG = "version";
 
     /**
      * Liefert Liste aller gespeicherten Einträge.
@@ -68,5 +101,10 @@ public interface IShortcutDAO {
      */
     public abstract void init(ShortcutFactory factory, String containerName) throws DAOException;
 
-
+    /**
+     * Liest die Kopf-Parameter des Containers (Name, Version etc.).
+     * @throws DAOException Persistenz-Probleme
+     * @return Tabelle mit den Kopf-Parametern.
+     */
+    public Map<String, String> readProlog() throws DAOException;
 }

@@ -31,6 +31,33 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO implements IReloadab
     }
 
     @Override
+    public Map<String, String> readProlog() throws DAOException {
+        Reader reader;
+        try {
+            reader = new FileReader(this.containerFile);
+        } catch (FileNotFoundException e) {
+            // TODO Exception Behandlung
+            e.printStackTrace();
+            return null;
+        }
+
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(reader);
+            Map<String, String> m = AbstractShortcutXmlDAO.readProlog(bufferedReader);
+            return m;
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
+    }
+
+    @Override
     protected Map<Integer, Shortcut> getShortcutsMap() throws DAOException {
         Reader reader;
         try {
