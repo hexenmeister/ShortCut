@@ -66,6 +66,7 @@ public class UIUtils {
         String items[] = combo.getItems();
         for (int i = 0, n = items.length; i < n; i++) {
             String itemStr = items[i];
+            itemStr = itemStr.replaceAll(",", "&#44;");
             itemsStr.append(itemStr);
             if (i < (n - 1)) {
                 itemsStr.append(",");
@@ -80,7 +81,7 @@ public class UIUtils {
         combo.removeAll();
         if (itemsStr != null) {
             for (StringTokenizer st = new StringTokenizer(itemsStr, ","); st.hasMoreElements();) {
-                combo.add(st.nextToken());
+                combo.add(st.nextToken().replaceAll("&#44;", ","));
             }
         }
     }
