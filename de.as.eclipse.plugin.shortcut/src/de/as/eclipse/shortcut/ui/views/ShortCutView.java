@@ -46,6 +46,8 @@ import de.as.eclipse.shortcut.Activator;
 import de.as.eclipse.shortcut.business.Shortcut;
 import de.as.eclipse.shortcut.internal.ProcessExecutor;
 import de.as.eclipse.shortcut.persist.DAOException;
+import de.as.eclipse.shortcut.persist.ShortcutContainer;
+import de.as.eclipse.shortcut.persist.ShortcutStore;
 import de.as.eclipse.shortcut.ui.UIConstants;
 import de.as.eclipse.shortcut.ui.UIUtils;
 import de.as.eclipse.shortcut.ui.views.dialog.ManageContainerDialog;
@@ -61,7 +63,6 @@ public class ShortCutView extends ViewPart {
     //XXX: http://www.java2s.com/Tutorial/Java/0280__SWT/DrawdifferentforegroundcolorsandfontsfortextinaTableItem.htm
 
     //XXX: !!! StylelabelProvider: http://wiki.eclipse.org/JFaceSnippets#Snippet049StyledCellLabelProvider
-
 
     public ShortCutView() {
     }
@@ -110,8 +111,7 @@ public class ShortCutView extends ViewPart {
 
     //TODO: ColNames sollen auch im LabelProvider definiert werden (denn die Reihenfolge hiere wie da wichtig ist)
     private String[] columnNames = { ShortCutView.NAME_COLUMN, ShortCutView.GROUP_COLUMN, ShortCutView.CATEGORY1_COLUMN, ShortCutView.CATEGORY2_COLUMN, ShortCutView.PRIORITY_COLUMN,
-            ShortCutView.SIZE_COLUMN,
-            ShortCutView.WORKDIR_COLUMN, ShortCutView.LAST_MODIFIED_COLUMN };
+            ShortCutView.SIZE_COLUMN, ShortCutView.WORKDIR_COLUMN, ShortCutView.LAST_MODIFIED_COLUMN };
 
     @Override
     public void createPartControl(Composite parent) {
@@ -353,8 +353,8 @@ public class ShortCutView extends ViewPart {
                 ShortCutView.this.fillContextMenu(manager);
             }
         });
-        Menu menu = menuMgr.createContextMenu(ShortCutView.tableViewer.getControl());
-        ShortCutView.tableViewer.getControl().setMenu(menu);
+        Menu popupMenu = menuMgr.createContextMenu(ShortCutView.tableViewer.getControl());
+        ShortCutView.tableViewer.getControl().setMenu(popupMenu);
         this.getSite().registerContextMenu(menuMgr, ShortCutView.tableViewer);
     }
 
@@ -364,6 +364,94 @@ public class ShortCutView extends ViewPart {
         manager.add(this.removeShortcut);
         // Other plug-ins can contribute there actions here
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+
+        // TODO: Copy/Move items from one Container to an other
+
+        ISelection selection = ShortCutView.tableViewer.getSelection();
+        final List<?> selectionList = ((IStructuredSelection) selection).toList();
+        final ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+        List<ShortcutContainer> containers = shortcutStore.getContainers();
+        if (selectionList.size() > 0) {
+            MenuManager copyManager = new MenuManager("&Copy", Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS), "copyItem");
+            // TODO: Hier verfügbare Container einfügen. Quell-Container ggf. 'ausgrauen'
+            for (final ShortcutContainer container : containers) {
+                Action cAction = new Action() {
+                    @Override
+                    public void run() {
+                        for (Iterator<?> it = selectionList.iterator(); it.hasNext();) {
+                            Shortcut shortcut = (Shortcut) it.next();
+                            // Nicht in sich selbst kopieren
+                            ShortcutContainer parentContainer = shortcutStore.getParentContainer(shortcut);
+                            if (container != parentContainer) {
+                                try {
+                                    Shortcut newShortcut = container.createNewShortcut();
+                                    newShortcut.copyFrom(shortcut);
+                                    container.addShortcut(newShortcut);
+                                } catch (DAOException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        ShortCutView.tableViewer.refresh();
+                    }
+
+                };
+                cAction.setText(container.getName());
+                cAction.setToolTipText("Copy item to container " + container.getName());
+                cAction.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS)); // TODO
+                // Wenn nur ein Shortcut selectier ist und denselben Container angehört, wie der Menueintrag, dann ausgrauen
+                if (selectionList.size() == 1) {
+                    Shortcut shortcut = (Shortcut) selectionList.get(0);
+                    cAction.setEnabled(container != shortcutStore.getParentContainer(shortcut));
+                }
+                copyManager.add(cAction);
+            }
+            copyManager.add(new Separator());
+            manager.add(copyManager);
+        }
+
+        if (selectionList.size() > 0) {
+            MenuManager moveManager = new MenuManager("&Move", Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS), "moveItem");
+            // TODO: Hier verfügbare Container einfügen. Quell-Container ggf. 'ausgrauen'
+            for (final ShortcutContainer container : containers) {
+                Action cAction = new Action() {
+                    @Override
+                    public void run() {
+                        for (Iterator<?> it = selectionList.iterator(); it.hasNext();) {
+                            Shortcut shortcut = (Shortcut) it.next();
+                            // Nicht in sich selbst kopieren
+                            ShortcutContainer parentContainer = shortcutStore.getParentContainer(shortcut);
+                            if (container != parentContainer) {
+                                try {
+                                    Shortcut newShortcut = container.createNewShortcut();
+                                    newShortcut.copyFrom(shortcut);
+                                    container.addShortcut(newShortcut);
+                                    parentContainer.removeShortcut(shortcut);
+                                } catch (DAOException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        ShortCutView.tableViewer.refresh();
+                    }
+
+                };
+                cAction.setText(container.getName());
+                cAction.setToolTipText("Copy item to container " + container.getName());
+                cAction.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS)); // TODO
+                // Wenn nur ein Shortcut selectier ist und denselben Container angehört, wie der Menueintrag, dann ausgrauen
+                if (selectionList.size() == 1) {
+                    Shortcut shortcut = (Shortcut) selectionList.get(0);
+                    cAction.setEnabled(container != shortcutStore.getParentContainer(shortcut));
+                }
+                moveManager.add(cAction);
+            }
+            moveManager.add(new Separator());
+            manager.add(moveManager);
+        }
+        // ---
     }
 
     private void contributeToActionBars() {
