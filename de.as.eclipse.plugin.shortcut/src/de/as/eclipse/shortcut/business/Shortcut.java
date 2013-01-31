@@ -2,7 +2,7 @@ package de.as.eclipse.shortcut.business;
 
 import java.io.File;
 
-public abstract class Shortcut {
+public abstract class Shortcut implements Cloneable {
 
     private Integer id;
 
@@ -125,6 +125,19 @@ public abstract class Shortcut {
     public long getLastModified() {
         File f = new File(this.payload);
         return f.exists() ? f.lastModified() : -1;
+    }
+
+    public Shortcut copyFrom(Shortcut another) {
+        this.setName(another.getName());
+        this.setPriority(another.getPriority());
+        this.setGroup(another.getGroup());
+        this.setCategory1(another.getCategory1());
+        this.setCategory2(another.getCategory2());
+        this.setPayload(another.getPayload());
+        this.setWorkingDir(another.getWorkingDir());
+        this.setGrabOutput(another.isGrabOutput());
+        this.setRgb(another.getRgb());
+        return this;
     }
 
 }
