@@ -200,13 +200,15 @@ public class ManageContainerDialog extends TrayDialog {
         this.btnRemove.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                //TODO
                 if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
                     ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
                     ShortcutContainer container = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
                     if (!shortcutStore.isDefault(container)) {
-                        shortcutStore.removeContainer(container);
-                        ManageContainerDialog.this.refreshContainerList();
+                        boolean doDelete = MessageDialog.openConfirm(ManageContainerDialog.this.getShell(), "Remove", "Do you want to remove container '" + container.getName() + "'?");
+                        if (doDelete) {
+                            shortcutStore.removeContainer(container);
+                            ManageContainerDialog.this.refreshContainerList();
+                        }
                     } else {
                         MessageDialog.openError(ManageContainerDialog.this.getShell(), "Error", "Default-Container could not be removed");
                     }
