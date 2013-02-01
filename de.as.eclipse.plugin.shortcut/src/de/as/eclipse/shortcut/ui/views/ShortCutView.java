@@ -384,7 +384,6 @@ public class ShortCutView extends ViewPart {
                 }
 
             };
-            // dAction.setText(container.getName());
             dAction.setToolTipText("duplicate item");
             dAction.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS)); // TODO
             manager.add(dAction);
