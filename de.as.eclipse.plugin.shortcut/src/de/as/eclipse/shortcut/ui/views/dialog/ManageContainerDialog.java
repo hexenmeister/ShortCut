@@ -46,7 +46,7 @@ public class ManageContainerDialog extends TrayDialog {
 
     private Button btnRemove;
 
-    private Button btnDelete;
+    private Button btnRename;
 
     private Button btnExportToFile;
 
@@ -188,6 +188,7 @@ public class ManageContainerDialog extends TrayDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // TODO
+                MessageDialog.openError(ManageContainerDialog.this.getShell(), "Not implemented", "Function is not implemented yet.");
             }
         });
         GridData gd_btnCreate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -217,17 +218,18 @@ public class ManageContainerDialog extends TrayDialog {
         this.btnRemove.setLayoutData(gd_btnRemove);
         this.btnRemove.setText("Remove");
 
-        this.btnDelete = new Button(container, SWT.NONE);
-        this.btnDelete.addSelectionListener(new SelectionAdapter() {
+        this.btnRename = new Button(container, SWT.NONE);
+        this.btnRename.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                MessageDialog.openError(ManageContainerDialog.this.getShell(), "Not implemented", "Function is not implemented yet.");
                 // TODO
             }
         });
-        GridData gd_btnDelete = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnDelete.widthHint = 80;
-        this.btnDelete.setLayoutData(gd_btnDelete);
-        this.btnDelete.setText("Delete");
+        GridData gd_btnRename = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gd_btnRename.widthHint = 80;
+        this.btnRename.setLayoutData(gd_btnRename);
+        this.btnRename.setText("Rename");
 
         Button btnImport = new Button(container, SWT.NONE);
         btnImport.addSelectionListener(new SelectionAdapter() {
@@ -305,21 +307,21 @@ public class ManageContainerDialog extends TrayDialog {
 
     private void adjustButtonsEnabledStatus() {
         this.btnRemove.setEnabled(true);
-        this.btnDelete.setEnabled(true);
+        this.btnRename.setEnabled(true);
         this.btnExportToFile.setEnabled(true);
         if (this.table.getSelectionIndex() >= 0) {
             ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
             ShortcutContainer container = shortcutStore.getContainers().get(this.table.getSelectionIndex());
             if (shortcutStore.isDefault(container)) {
                 this.btnRemove.setEnabled(false);
-                this.btnDelete.setEnabled(false);
+                this.btnRename.setEnabled(false);
             }
             if (container.isReadOnly()) {
-                this.btnDelete.setEnabled(false);
+                this.btnRename.setEnabled(false);
             }
         } else {
             this.btnRemove.setEnabled(false);
-            this.btnDelete.setEnabled(false);
+            this.btnRename.setEnabled(false);
             this.btnExportToFile.setEnabled(false);
         }
     }
