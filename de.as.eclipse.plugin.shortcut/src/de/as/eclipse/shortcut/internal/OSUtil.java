@@ -9,13 +9,13 @@ package de.as.eclipse.shortcut.internal;
 public class OSUtil {
 
     // Bei der Ermittlung des BS konnte man auch Property 'os.name' verwenden,
-    // da diese durch -D Parameter überschrieben werden kann.
-    // Daher wurde der Umweg über die Verfügbarkeit von bestimmten BS-Commandos gewählt.
+    // da diese durch -D Parameter Ãœberschrieben werden kann.
+    // Daher wurde der Umweg Ã¼ber die VerfÃ¼gbarkeit von bestimmten BS-Commandos gewÃ¤hlt.
 
     private static Boolean isMac;
 
     /**
-     * Prüfung, ob bei dem verwendeten Betriebssystem um MacOS handelt.
+     * PrÃ¼fung, ob bei dem verwendeten Betriebssystem um MacOS handelt.
      * @return true/false
      */
     public static boolean isMac() {
@@ -33,7 +33,7 @@ public class OSUtil {
     private static Boolean isWinNt;
 
     /**
-     * Prüfung, ob bei dem verwendeten Betriebssystem um WindowsNT (NT, 2000, XP, Vista, 7 etc.) handelt.
+     * PrÃ¼fung, ob bei dem verwendeten Betriebssystem um WindowsNT (NT, 2000, XP, Vista, 7 etc.) handelt.
      * @return true/false
      */
     public static boolean isWinNt() {
@@ -51,7 +51,7 @@ public class OSUtil {
     private static Boolean isWinOld;
 
     /**
-     * Prüfung, ob bei dem verwendeten Betriebssystem um Windows 95, 98 oder ME handelt.
+     * PrÃ¼fung, ob bei dem verwendeten Betriebssystem um Windows 95, 98 oder ME handelt.
      * @return true/false
      */
     public static boolean isWinOld() {
@@ -73,7 +73,7 @@ public class OSUtil {
     private static Boolean isUnix;
 
     /**
-     * Prüfung, ob bei dem verwendeten Betriebssystem um ein Unix-Derivat (aber nicht MacOS X) handelt.
+     * PrÃ¼fung, ob bei dem verwendeten Betriebssystem um ein Unix-Derivat (aber nicht MacOS X) handelt.
      * @return true/false
      */
     public static boolean isUnix() {
