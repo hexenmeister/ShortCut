@@ -2,7 +2,12 @@ package de.as.eclipse.shortcut.business;
 
 import java.io.File;
 
-public abstract class Shortcut implements Cloneable {
+/**
+ * Diese Struktur nimmt die Daten zu einem Shortcut auf.
+ *
+ * @author Alexander Schulz
+ */
+public abstract class Shortcut {
 
     private Integer id;
 
