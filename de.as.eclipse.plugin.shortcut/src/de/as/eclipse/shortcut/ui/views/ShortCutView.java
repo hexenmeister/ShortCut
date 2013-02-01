@@ -47,6 +47,7 @@ import de.as.eclipse.shortcut.business.Shortcut;
 import de.as.eclipse.shortcut.internal.ProcessExecutor;
 import de.as.eclipse.shortcut.persist.DAOException;
 import de.as.eclipse.shortcut.persist.ShortcutContainer;
+import de.as.eclipse.shortcut.persist.ShortcutDataUtil;
 import de.as.eclipse.shortcut.persist.ShortcutStore;
 import de.as.eclipse.shortcut.ui.UIConstants;
 import de.as.eclipse.shortcut.ui.UIUtils;
@@ -365,13 +366,29 @@ public class ShortCutView extends ViewPart {
         // Other plug-ins can contribute there actions here
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
-        // TODO: Copy/Move items from one Container to an other
+        // Copy/Move/Clone items from one Container to an other
 
         ISelection selection = ShortCutView.tableViewer.getSelection();
         final List<?> selectionList = ((IStructuredSelection) selection).toList();
         final ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
         List<ShortcutContainer> containers = shortcutStore.getContainers();
         if (selectionList.size() > 0) {
+            Action dAction = new Action("&Duplicate") {
+                @Override
+                public void run() {
+                    for (Iterator<?> it = selectionList.iterator(); it.hasNext();) {
+                        Shortcut shortcut = (Shortcut) it.next();
+                        ShortcutDataUtil.duplicateShortcut(shortcutStore, shortcut);
+                    }
+                    ShortCutView.tableViewer.refresh();
+                }
+
+            };
+            // dAction.setText(container.getName());
+            dAction.setToolTipText("duplicate item");
+            dAction.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS)); // TODO
+            manager.add(dAction);
+
             MenuManager copyManager = new MenuManager("&Copy", Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS), "copyItem");
             // TODO: Hier verfügbare Container einfügen. Quell-Container ggf. 'ausgrauen'
             for (final ShortcutContainer container : containers) {
@@ -380,18 +397,7 @@ public class ShortCutView extends ViewPart {
                     public void run() {
                         for (Iterator<?> it = selectionList.iterator(); it.hasNext();) {
                             Shortcut shortcut = (Shortcut) it.next();
-                            // Nicht in sich selbst kopieren
-                            ShortcutContainer parentContainer = shortcutStore.getParentContainer(shortcut);
-                            if (container != parentContainer) {
-                                try {
-                                    Shortcut newShortcut = container.createNewShortcut();
-                                    newShortcut.copyFrom(shortcut);
-                                    container.addShortcut(newShortcut);
-                                } catch (DAOException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                            }
+                            ShortcutDataUtil.copyShortcut(shortcutStore, shortcut, container);
                         }
                         ShortCutView.tableViewer.refresh();
                     }
@@ -409,9 +415,7 @@ public class ShortCutView extends ViewPart {
             }
             copyManager.add(new Separator());
             manager.add(copyManager);
-        }
 
-        if (selectionList.size() > 0) {
             MenuManager moveManager = new MenuManager("&Move", Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS), "moveItem");
             // TODO: Hier verfügbare Container einfügen. Quell-Container ggf. 'ausgrauen'
             for (final ShortcutContainer container : containers) {
@@ -420,19 +424,7 @@ public class ShortCutView extends ViewPart {
                     public void run() {
                         for (Iterator<?> it = selectionList.iterator(); it.hasNext();) {
                             Shortcut shortcut = (Shortcut) it.next();
-                            // Nicht in sich selbst kopieren
-                            ShortcutContainer parentContainer = shortcutStore.getParentContainer(shortcut);
-                            if (container != parentContainer) {
-                                try {
-                                    Shortcut newShortcut = container.createNewShortcut();
-                                    newShortcut.copyFrom(shortcut);
-                                    container.addShortcut(newShortcut);
-                                    parentContainer.removeShortcut(shortcut);
-                                } catch (DAOException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                            }
+                            ShortcutDataUtil.moveShortcut(shortcutStore, shortcut, container);
                         }
                         ShortCutView.tableViewer.refresh();
                     }
