@@ -82,9 +82,9 @@ public class ShortCutView extends ViewPart {
 
     private Action manageContainers;
 
-    private Action importShortcuts;
-
-    private Action exportShortcuts;
+    //    private Action importShortcuts;
+    //
+    //    private Action exportShortcuts;
 
     private Action doubleClickAction;
 
@@ -457,8 +457,8 @@ public class ShortCutView extends ViewPart {
         manager.add(this.removeShortcut);
         manager.add(new Separator());
         manager.add(this.manageContainers);
-        manager.add(this.importShortcuts);
-        manager.add(this.exportShortcuts);
+        //        manager.add(this.importShortcuts);
+        //        manager.add(this.exportShortcuts);
         manager.add(new Separator());
     }
 
@@ -488,33 +488,33 @@ public class ShortCutView extends ViewPart {
         this.manageContainers.setToolTipText("Create, add and delete shortcut containers");
         this.manageContainers.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_CONTAINERS));
 
-        this.importShortcuts = new Action() {
-            @Override
-            public void run() {
-                // TODO
+        //        this.importShortcuts = new Action() {
+        //            @Override
+        //            public void run() {
+        //                // TODO
+        //
+        //                ShortCutView.tableViewer.refresh();
+        //                ShortCutView.this.packColumns();
+        //                ShortCutView.this.updateTitle();
+        //            }
+        //        };
+        //        this.importShortcuts.setText("Import shortcuts");
+        //        this.importShortcuts.setToolTipText("Import shortcuts");
+        //        this.importShortcuts.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_SHORTCUT)); // TODO
 
-                ShortCutView.tableViewer.refresh();
-                ShortCutView.this.packColumns();
-                ShortCutView.this.updateTitle();
-            }
-        };
-        this.importShortcuts.setText("Import shortcuts");
-        this.importShortcuts.setToolTipText("Import shortcuts");
-        this.importShortcuts.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_SHORTCUT)); // TODO
-
-        this.exportShortcuts = new Action() {
-            @Override
-            public void run() {
-                // TODO
-
-                // ShortCutView.tableViewer.refresh();
-                // ShortCutView.this.packColumns();
-                // ShortCutView.this.updateTitle();
-            }
-        };
-        this.exportShortcuts.setText("Export shortcuts");
-        this.exportShortcuts.setToolTipText("Export shortcuts");
-        this.exportShortcuts.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_SHORTCUT)); // TODO
+        //        this.exportShortcuts = new Action() {
+        //            @Override
+        //            public void run() {
+        //                // TODO
+        //
+        //                // ShortCutView.tableViewer.refresh();
+        //                // ShortCutView.this.packColumns();
+        //                // ShortCutView.this.updateTitle();
+        //            }
+        //        };
+        //        this.exportShortcuts.setText("Export shortcuts");
+        //        this.exportShortcuts.setToolTipText("Export shortcuts");
+        //        this.exportShortcuts.setImageDescriptor(Activator.getImageDescriptor(UIConstants.ICON_SHORTCUT)); // TODO
 
         this.editShortcut = new Action() {
             @Override
