@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -17,6 +19,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -42,6 +45,7 @@ import de.as.eclipse.shortcut.ui.UIConstants;
 import de.as.eclipse.shortcut.ui.UIUtils;
 
 public class ManageContainerDialog extends TrayDialog {
+
     private Table table;
 
     private Button btnRemove;
@@ -136,7 +140,7 @@ public class ManageContainerDialog extends TrayDialog {
             public String getColumnText(Object arg0, int arg1) {
                 ShortcutContainer sc = (ShortcutContainer) arg0;
                 String colText = sc.getName();
-                ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+                ShortcutStore shortcutStore = ManageContainerDialog.this.getShortcutStore();
                 if (shortcutStore.isDefault(sc)) {
                     colText += " (default)";
                 }
@@ -201,7 +205,7 @@ public class ManageContainerDialog extends TrayDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
-                    ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+                    ShortcutStore shortcutStore = ManageContainerDialog.this.getShortcutStore();
                     ShortcutContainer container = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
                     if (!shortcutStore.isDefault(container)) {
                         boolean doDelete = MessageDialog.openConfirm(ManageContainerDialog.this.getShell(), "Remove", "Do you want to remove container '" + container.getName() + "'?");
@@ -224,9 +228,61 @@ public class ManageContainerDialog extends TrayDialog {
         this.btnRename.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                MessageDialog.openError(ManageContainerDialog.this.getShell(), "Not implemented", "Function is not implemented yet.");
-                // TODO
+                if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
+                    ShortcutStore shortcutStore = ManageContainerDialog.this.getShortcutStore();
+                    ShortcutContainer container = shortcutStore.getContainers().get(ManageContainerDialog.this.table.getSelectionIndex());
+                    String oldName = container.getName();
+                    InputDialog input = new InputDialog(ManageContainerDialog.this.getShell(), "Rename container", "Please enter new container name", oldName, new ContainerNameValidator(2, 70));
+                    if (input.open() == Window.OK) {
+                        try {
+                            String newName = input.getValue();
+                            if (!newName.equals(oldName)) {
+                                container.rename(newName);
+                                ManageContainerDialog.this.checkboxTableViewer.refresh();
+                            }
+                        } catch (DAOException e1) {
+                            // TODO log
+                            MessageDialog.openError(ManageContainerDialog.this.getShell(), "Rename failed", "Container rename was not successful.");
+                        }
+                    }
+                }
             }
+
+            /**
+             * Prüft den eingegebenen Container-Name auf seine Gültigkein.
+             */
+            final class ContainerNameValidator implements IInputValidator {
+                private int minLength = 0;
+
+                private int maxLength = 100;
+
+                public ContainerNameValidator(int minLength, int maxLength) {
+                    this.minLength = minLength;
+                    this.maxLength = maxLength;
+                }
+
+                /**
+                 * Prüft die eingegebene Zeichenkette. Liefert null für gültig oder Fehlermeldung anderfalls.
+                 * 
+                 * @param text zu validierende Zeichenkette
+                 * @return String als Fehlermeldung oder null für OK
+                 */
+                public String isValid(String text) {
+                    int len = text.length();
+
+                    // Determine if input is too short or too long
+                    if (len < this.minLength) {
+                        return "The new container name is too short";
+                    }
+                    if (len > this.maxLength) {
+                        return "The new container name is too long";
+                    }
+
+                    // Input must be OK
+                    return null;
+                }
+            }
+
         });
         GridData gd_btnRename = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gd_btnRename.widthHint = 80;
@@ -239,7 +295,7 @@ public class ManageContainerDialog extends TrayDialog {
             public void widgetSelected(SelectionEvent e) {
                 String path = UIUtils.browseFile("container.import.file", ManageContainerDialog.this.getShell(), null, SWT.OPEN);
                 if (path != null) {
-                    ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+                    ShortcutStore shortcutStore = ManageContainerDialog.this.getShortcutStore();
                     try {
                         ShortcutFileDAO dao = new ShortcutFileDAO(path);
                         Map<String, String> prologMap = dao.readProlog();
@@ -267,7 +323,7 @@ public class ManageContainerDialog extends TrayDialog {
                 String path = UIUtils.browseFile("container.export.file", ManageContainerDialog.this.getShell(), null, SWT.SAVE);
                 if (path != null) {
                     if (ManageContainerDialog.this.table.getSelectionIndex() >= 0) {
-                        ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+                        ShortcutStore shortcutStore = ManageContainerDialog.this.getShortcutStore();
                         try {
                             // Prüfen, ob die Datei bereits existiert, in diesem Fall Bestätigung abfragen
                             File f = new File(path);
@@ -303,7 +359,7 @@ public class ManageContainerDialog extends TrayDialog {
 
     private void refreshContainerList() {
         // Content/LabelProvider definieren den sichtbaren Inhalt.
-        this.checkboxTableViewer.setInput(Activator.getDefault().getShortcutStore().getContainers());
+        this.checkboxTableViewer.setInput(this.getShortcutStore().getContainers());
         this.checkboxTableViewer.refresh();
     }
 
@@ -312,7 +368,7 @@ public class ManageContainerDialog extends TrayDialog {
         this.btnRename.setEnabled(true);
         this.btnExportToFile.setEnabled(true);
         if (this.table.getSelectionIndex() >= 0) {
-            ShortcutStore shortcutStore = Activator.getDefault().getShortcutStore();
+            ShortcutStore shortcutStore = this.getShortcutStore();
             ShortcutContainer container = shortcutStore.getContainers().get(this.table.getSelectionIndex());
             if (shortcutStore.isDefault(container)) {
                 this.btnRemove.setEnabled(false);
@@ -345,4 +401,11 @@ public class ManageContainerDialog extends TrayDialog {
         return new Point(450, 336);
     }
 
+    /**
+     * Liefert die verwendete ShortcutStore.
+     * @return Store
+     */
+    private ShortcutStore getShortcutStore() {
+        return Activator.getDefault().getShortcutStore();
+    }
 }
