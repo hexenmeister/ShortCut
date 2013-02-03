@@ -3,11 +3,6 @@ package de.as.eclipse.shortcut.ui.views.dialog;
 import java.io.File;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
@@ -312,7 +307,7 @@ public class ShortcutDialog extends TrayDialog {
 
                 String path = UIUtils.browseFile(ShortcutDialog.this.getShell(), text, SWT.OPEN);
                 if (path != null) {
-                    path = ShortcutDialog.this.substitureWorkspaceLocations(path);
+                    path = UIUtils.substitureWorkspaceLocations(path);
                     // Pfade mit Leerzeichen in Anführungszeichen nehmen
                     if (path.indexOf(' ') >= 0) {
                         path = "\"" + path + "\"";
@@ -347,7 +342,7 @@ public class ShortcutDialog extends TrayDialog {
                         f = f.getParentFile();
                         path = f.getAbsolutePath();
                     }
-                    path = ShortcutDialog.this.substitureWorkspaceLocations(path);
+                    path = UIUtils.substitureWorkspaceLocations(path);
                     ShortcutDialog.this.fWorkDir.setText(path);
                 }
             }
@@ -370,32 +365,6 @@ public class ShortcutDialog extends TrayDialog {
         }
 
         return comp;
-    }
-
-    private String substitureWorkspaceLocations(String path) {
-        // Nachsehen, ob der Pfad einem der registrierten Projekte angeh�rt
-        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-        for (int i = 0; i < projects.length; i++) {
-            String projectPath = projects[i].getLocation().toOSString();
-            if (path.startsWith(projectPath)) {
-                String projectRelLocation = projects[i].getFullPath().toString();
-                path = "${workspace_loc:" + projectRelLocation + "}" + path.substring(projectPath.length());
-                return path;
-            }
-        }
-
-        // Evtl. liegt der Pfad in dem Workspace?
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = workspace.getRoot();
-        IPath location = root.getLocation();
-        String workspacePath = location.toOSString();
-        if (path.startsWith(workspacePath)) {
-            path = "${workspace_loc}" + path.substring(workspacePath.length());
-            return path;
-        }
-
-        // ... ansonsten unver�ndert zur�ckgeben
-        return path;
     }
 
     private void applyValues(Shortcut shortcut) {

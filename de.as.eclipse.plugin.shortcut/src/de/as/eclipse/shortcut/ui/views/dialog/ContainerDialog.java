@@ -2,11 +2,6 @@ package de.as.eclipse.shortcut.ui.views.dialog;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -111,7 +106,7 @@ public class ContainerDialog extends TrayDialog {
                         f = f.getParentFile();
                         path = f.getAbsolutePath();
                     }
-                    path = ContainerDialog.this.substitureWorkspaceLocations(path);
+                    path = UIUtils.substitureWorkspaceLocations(path);
                     ContainerDialog.this.fFile.setText(path);
                 }
             }
@@ -130,32 +125,6 @@ public class ContainerDialog extends TrayDialog {
         this.setHelpAvailable(false);
 
         return comp;
-    }
-
-    private String substitureWorkspaceLocations(String path) {
-        // Nachsehen, ob der Pfad einem der registrierten Projekte angehört
-        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-        for (int i = 0; i < projects.length; i++) {
-            String projectPath = projects[i].getLocation().toOSString();
-            if (path.startsWith(projectPath)) {
-                String projectRelLocation = projects[i].getFullPath().toString();
-                path = "${workspace_loc:" + projectRelLocation + "}" + path.substring(projectPath.length());
-                return path;
-            }
-        }
-
-        // Evtl. liegt der Pfad in dem Workspace?
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = workspace.getRoot();
-        IPath location = root.getLocation();
-        String workspacePath = location.toOSString();
-        if (path.startsWith(workspacePath)) {
-            path = "${workspace_loc}" + path.substring(workspacePath.length());
-            return path;
-        }
-
-        // ... ansonsten unverändert zurückgeben
-        return path;
     }
 
     @Override

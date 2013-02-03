@@ -3,7 +3,12 @@ package de.as.eclipse.shortcut.ui;
 import java.io.File;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.jface.viewers.TableViewer;
@@ -209,4 +214,36 @@ public class UIUtils {
             return ret;
         }
     }
+
+    /**
+     * Ersetzt ggf. vorhandene Workspace-Pfad (oder Projekt-Pfad) durch eine entsprechende Variable.
+     * @param path Pfad
+     * @return Pfad ggf. mit einer WS-Variable
+     */
+    public static String substitureWorkspaceLocations(String path) {
+        // Nachsehen, ob der Pfad einem der registrierten Projekte angeh�rt
+        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+        for (int i = 0; i < projects.length; i++) {
+            String projectPath = projects[i].getLocation().toOSString();
+            if (path.startsWith(projectPath)) {
+                String projectRelLocation = projects[i].getFullPath().toString();
+                path = "${workspace_loc:" + projectRelLocation + "}" + path.substring(projectPath.length());
+                return path;
+            }
+        }
+
+        // Evtl. liegt der Pfad in dem Workspace?
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceRoot root = workspace.getRoot();
+        IPath location = root.getLocation();
+        String workspacePath = location.toOSString();
+        if (path.startsWith(workspacePath)) {
+            path = "${workspace_loc}" + path.substring(workspacePath.length());
+            return path;
+        }
+
+        // ... ansonsten unver�ndert zur�ckgeben
+        return path;
+    }
+
 }
