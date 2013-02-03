@@ -133,7 +133,7 @@ public class ContainerDialog extends TrayDialog {
     }
 
     private String substitureWorkspaceLocations(String path) {
-        // Nachsehen, ob der Pfad einem der registrierten Projekte angeh�rt
+        // Nachsehen, ob der Pfad einem der registrierten Projekte angehört
         IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
         for (int i = 0; i < projects.length; i++) {
             String projectPath = projects[i].getLocation().toOSString();
@@ -154,7 +154,7 @@ public class ContainerDialog extends TrayDialog {
             return path;
         }
 
-        // ... ansonsten unver�ndert zur�ckgeben
+        // ... ansonsten unverändert zurückgeben
         return path;
     }
 
