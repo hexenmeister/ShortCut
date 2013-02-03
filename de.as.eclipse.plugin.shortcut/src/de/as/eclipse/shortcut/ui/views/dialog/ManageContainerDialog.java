@@ -191,8 +191,12 @@ public class ManageContainerDialog extends TrayDialog {
         btnCreate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // TODO
-                MessageDialog.openError(ManageContainerDialog.this.getShell(), "Not implemented", "Function is not implemented yet.");
+
+                ContainerDialog add = new ContainerDialog(ManageContainerDialog.this.getShell());
+                int res = add.open();
+                if (res == Window.OK) {
+                    ManageContainerDialog.this.refreshContainerList();
+                }
             }
         });
         GridData gd_btnCreate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
