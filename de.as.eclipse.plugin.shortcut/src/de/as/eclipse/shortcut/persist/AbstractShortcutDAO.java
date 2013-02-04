@@ -26,24 +26,17 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
 
     private ShortcutFactory factory;
 
-    private String containerName;
-
     @Override
-    public void init(ShortcutFactory factory, String containerName) throws DAOException {
+    public Map<String, String> init(ShortcutFactory factory) throws DAOException {
         boolean firstInit = this.factory == null;
         this.factory = factory;
-        this.containerName = containerName;
-        if (!firstInit) {
-            this.updateShortcuts();
-        }
+        // Existierenden Prolog lesen
+        Map<String, String> prolog = this.readProlog();
+        return prolog;
     }
 
     protected ShortcutFactory getFactory() {
         return this.factory;
-    }
-
-    protected String getContainerName() {
-        return this.containerName;
     }
 
     @Override
@@ -52,36 +45,36 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
     }
 
     @Override
-    public void addShortcut(Shortcut shortcut) throws DAOException {
+    public void addShortcut(Map<String, String> prolog, Shortcut shortcut) throws DAOException {
         if (shortcut.getId() != null) {
             throw new RuntimeException("DAO error: attempt to add a new shortcut with an existing id. please use update function.");
         }
         Map<Integer, Shortcut> m = this.getShortcutsMap();
         shortcut.setId(this.getNewId(m));
         m.put(shortcut.getId(), shortcut);
-        this.saveShortcuts(m);
+        this.saveShortcuts(prolog, m);
     }
 
     @Override
-    public void removeShortcut(Shortcut shortcut) throws DAOException {
+    public void removeShortcut(Map<String, String> prolog, Shortcut shortcut) throws DAOException {
         Map<Integer, Shortcut> m = this.getShortcutsMap();
         m.remove(shortcut.getId());
-        this.saveShortcuts(m);
+        this.saveShortcuts(prolog, m);
     }
 
     @Override
-    public void updateShortcut(Shortcut shortcut) throws DAOException {
+    public void updateShortcut(Map<String, String> prolog, Shortcut shortcut) throws DAOException {
         if (shortcut.getId() == null) {
             throw new RuntimeException("DAO error: attempt to update a shortcut without an existing id. please use add function.");
         }
 
         Map<Integer, Shortcut> m = this.getShortcutsMap();
         m.put(shortcut.getId(), shortcut);
-        this.saveShortcuts(m);
+        this.saveShortcuts(prolog, m);
     }
 
     @Override
-    public void mergeShortcuts(List<Shortcut> newList) throws DAOException {
+    public void mergeShortcuts(Map<String, String> prolog, List<Shortcut> newList) throws DAOException {
         Map<Integer, Shortcut> m = this.getShortcutsMap();
 
         if (newList != null) {
@@ -99,7 +92,7 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
                     m.put(newShortcut.getId(), newShortcut);
                 }
             }
-            this.saveShortcuts(m);
+            this.saveShortcuts(prolog, m);
         }
     }
 
@@ -133,11 +126,13 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
 
     /**
      * Schreibt die Datensätze neu.
+     * @param prolog Map mit Meta-Daten (Name, Description)
      * @throws DAOException Persistenz-Probleme
      */
-    protected void updateShortcuts() throws DAOException {
+    @Override
+    public void saveShortcuts(Map<String, String> prolog) throws DAOException {
         Map<Integer, Shortcut> m = this.getShortcutsMap();
-        this.saveShortcuts(m);
+        this.saveShortcuts(prolog, m);
     }
 
     /**
@@ -149,9 +144,10 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
 
     /**
      * Persistiert die Einträge.
+     * @param prolog Map mit Meta-Daten (Name, Description)
      * @param shortcuts Map mit den Einträgen
      * @throws DAOException Persistenz-Probleme
      */
-    protected abstract void saveShortcuts(Map<Integer, Shortcut> shortcuts) throws DAOException;
+    protected abstract void saveShortcuts(Map<String, String> prolog, Map<Integer, Shortcut> shortcuts) throws DAOException;
 
 }

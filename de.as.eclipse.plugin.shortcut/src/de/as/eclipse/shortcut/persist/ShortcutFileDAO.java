@@ -85,7 +85,7 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO implements IReloadab
     }
 
     @Override
-    protected void saveShortcuts(Map<Integer, Shortcut> shortcuts) throws DAOException {
+    protected void saveShortcuts(Map<String, String> prolog, Map<Integer, Shortcut> shortcuts) throws DAOException {
         Writer writer;
         try {
             writer = new FileWriter(this.containerFile);
@@ -98,7 +98,7 @@ public class ShortcutFileDAO extends AbstractShortcutXmlDAO implements IReloadab
         BufferedWriter bufferedWriter = null;
         try {
             bufferedWriter = new BufferedWriter(writer);
-            AbstractShortcutXmlDAO.writeShortcuts(shortcuts, ShortcutFileDAO.SHORTCUTS_TAG, this.getContainerName(), bufferedWriter);
+            AbstractShortcutXmlDAO.writeShortcuts(prolog, shortcuts, ShortcutFileDAO.SHORTCUTS_TAG, bufferedWriter);
         } finally {
             if (bufferedWriter != null) {
                 try {

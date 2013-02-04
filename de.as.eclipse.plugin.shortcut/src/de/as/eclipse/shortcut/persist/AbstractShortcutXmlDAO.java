@@ -115,7 +115,7 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
             String payload = memento.getString(ShortcutXmlCodecV1_0.LOCATION_TAG);
             String moreCommands = memento.getString(ShortcutXmlCodecV1_0.MCMDS_TAG);
             if (moreCommands != null) {
-                payload+= "\r\n" + moreCommands;
+                payload += "\r\n" + moreCommands;
             }
             shortcut.setPayload(payload);
             shortcut.setPriority(memento.getString(AbstractShortcutXmlCodec.PRIORITY_TAG));
@@ -208,13 +208,14 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
      * @param shortcuts Map mit en Einträgen (id, Item).
      * @param root Root-Tag
      * @param containerName Name des Containers
+     * @param containerDescription Beshreibung des Containers
      * @return String mit XML-Daten
      * @throws DAOException Persistenz-Probleme
      */
-    protected static String writeShortcutsToString(Map<Integer, Shortcut> shortcuts, String root, String containerName) throws DAOException {
+    protected static String writeShortcutsToString(Map<String, String> prolog, Map<Integer, Shortcut> shortcuts, String root) throws DAOException {
         if (shortcuts != null) {
             StringWriter writer = new StringWriter();
-            AbstractShortcutXmlDAO.writeShortcuts(shortcuts, root, containerName, writer);
+            AbstractShortcutXmlDAO.writeShortcuts(prolog, shortcuts, root, writer);
             return writer.toString();
         }
         return "";
@@ -225,16 +226,21 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
      * @param shortcuts Map mit en Einträgen (id, Item).
      * @param root Root-Tag
      * @param containerName Name des Containers
+     * @param containerDescription Beshreibung des Containers
      * @param writer Ziel für die Datenspeicherung
      * @throws DAOException Persistenz-Probleme
      */
-    protected static void writeShortcuts(Map<Integer, Shortcut> shortcuts, String root, String containerName, Writer writer) throws DAOException {
+    protected static void writeShortcuts(Map<String, String> prolog, Map<Integer, Shortcut> shortcuts, String root, Writer writer) throws DAOException {
         if (shortcuts != null) {
             XMLMemento rootMemento = XMLMemento.createWriteRoot(root);
+
+            String containerName = prolog.get(IShortcutDAO.CONTAINER_NAME_TAG);
+            String containerDescription = prolog.get(IShortcutDAO.CONTAINER_DESCRIPTION_TAG);
 
             // Prolog
             rootMemento.putString(IShortcutDAO.CREATOR_TAG, "ShortCut");
             rootMemento.putString(IShortcutDAO.CONTAINER_NAME_TAG, containerName);
+            rootMemento.putString(IShortcutDAO.CONTAINER_DESCRIPTION_TAG, containerDescription);
             rootMemento.putString(IShortcutDAO.USER_TAG, System.getProperty("user.name"));
             rootMemento.putString(IShortcutDAO.OS_TAG, System.getProperty("os.name") + ", " + System.getProperty("os.version") + ", " + System.getProperty("os.arch"));
             rootMemento.putString(IShortcutDAO.DATE_TAG, DateFormat.getDateTimeInstance().format(new Date()));

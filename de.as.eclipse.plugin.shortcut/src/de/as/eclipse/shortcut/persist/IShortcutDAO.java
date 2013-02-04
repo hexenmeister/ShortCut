@@ -26,6 +26,11 @@ public interface IShortcutDAO {
     public static final String CONTAINER_NAME_TAG = "name";
 
     /**
+     * Prolog-Tag: Container-Description.
+     */
+    public static final String CONTAINER_DESCRIPTION_TAG = "description";
+
+    /**
      * Prolog-Tag: OS (Betriebsystem, unter dem das Container erstellt wurde.)
      */
     public static final String OS_TAG = "os";
@@ -54,31 +59,35 @@ public interface IShortcutDAO {
 
     /**
      * Fügt ein neuen Eintrag hinzu.
-     * @throws DAOException Persistenz-Probleme
+     * @param prolog Map mit Meta-Daten (Name, Description)
      * @param shortcut Shortcut-Eintrag
+     * @throws DAOException Persistenz-Probleme
      */
-    public abstract void addShortcut(Shortcut shortcut) throws DAOException;
+    public abstract void addShortcut(Map<String, String> prolog, Shortcut shortcut) throws DAOException;
 
     /**
      * Entfernt (löscht) den übergeben Shortcut.
-     * @throws DAOException Persistenz-Probleme
+     * @param prolog Map mit Meta-Daten (Name, Description)
      * @param shortcut Shortcut-Eintrag
+     * @throws DAOException Persistenz-Probleme
      */
-    public abstract void removeShortcut(Shortcut shortcut) throws DAOException;
+    public abstract void removeShortcut(Map<String, String> prolog, Shortcut shortcut) throws DAOException;
 
     /**
      * Aktualisiert die Daten für ein gegebenen Eintrag.
-     * @throws DAOException Persistenz-Probleme
+     * @param prolog Map mit Meta-Daten (Name, Description)
      * @param shortcut Shortcut-Eintrag
+     * @throws DAOException Persistenz-Probleme
      */
-    public abstract void updateShortcut(Shortcut shortcut) throws DAOException;
+    public abstract void updateShortcut(Map<String, String> prolog, Shortcut shortcut) throws DAOException;
 
     /**
      * Fügt alle Einträge aus der gegebenen Liste zu den gespeicheren Einträgen hinzu.
-     * @throws DAOException Persistenz-Probleme
+     * @param prolog Map mit Meta-Daten (Name, Description)
      * @param newList Liste der Einträge
+     * @throws DAOException Persistenz-Probleme
      */
-    public abstract void mergeShortcuts(List<Shortcut> newList) throws DAOException;
+    public abstract void mergeShortcuts(Map<String, String> prolog, List<Shortcut> newList) throws DAOException;
 
     /**
      * Entfernt alle gespeicherten Einträge.
@@ -96,10 +105,10 @@ public interface IShortcutDAO {
      * Initialisiert das DAO mit einer passenden Fabrik.
      * Wird zu internen Zwecken gebraucht.
      * @param factory ShortcutFactory
-     * @param containerName Name des Containers (kann ggf. mitgespeichert werden).
+     * @return Liefert Prolog-Map (falls Container bereits existiert)
      * @throws DAOException Persistenz-Probleme
      */
-    public abstract void init(ShortcutFactory factory, String containerName) throws DAOException;
+    public abstract Map<String, String> init(ShortcutFactory factory) throws DAOException;
 
     /**
      * Liest die Kopf-Parameter des Containers (Name, Version etc.).
@@ -107,4 +116,11 @@ public interface IShortcutDAO {
      * @return Tabelle mit den Kopf-Parametern.
      */
     public Map<String, String> readProlog() throws DAOException;
+
+    /**
+     * Schreibt die Datensätze neu.
+     * @param prolog Map mit Meta-Daten (Name, Description)
+     * @throws DAOException Persistenz-Probleme
+     */
+    public void saveShortcuts(Map<String, String> prolog) throws DAOException;
 }

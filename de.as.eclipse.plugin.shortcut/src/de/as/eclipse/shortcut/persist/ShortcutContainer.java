@@ -1,7 +1,9 @@
 package de.as.eclipse.shortcut.persist;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.as.eclipse.shortcut.business.Shortcut;
 
@@ -13,9 +15,9 @@ import de.as.eclipse.shortcut.business.Shortcut;
  */
 public final class ShortcutContainer {
 
-    private String name;
-
     private IShortcutDAO dao;
+
+    private Map<String, String> prolog;
 
     private ShortcutFactory shortcutFactory;
 
@@ -36,9 +38,17 @@ public final class ShortcutContainer {
         this.checkDao(dao);
 
         this.dao = dao;
-        this.name = name;
         this.shortcutFactory = new ShortcutFactory(this);
-        dao.init(this.shortcutFactory, name);
+        this.prolog = dao.init(this.shortcutFactory);
+        //        try {
+        //            this.prolog = this.dao.readProlog();
+        if (this.prolog == null) {
+            this.prolog = new HashMap<String, String>();
+        }
+        //        } catch (DAOException e) {
+        //            // TODO Log
+        //        }
+        this.setName(name);
     }
 
     /**
@@ -71,7 +81,11 @@ public final class ShortcutContainer {
      * @return Container-Name
      */
     public String getName() {
-        return this.name;
+        return this.prolog.get(IShortcutDAO.CONTAINER_NAME_TAG);
+    }
+
+    private void setName(String name) {
+        this.prolog.put(IShortcutDAO.CONTAINER_NAME_TAG, name);
     }
 
     /**
@@ -82,9 +96,31 @@ public final class ShortcutContainer {
     public void rename(String name) throws DAOException {
         this.checkContainerName(name);
 
-        this.name = name;
+        this.setName(name);
         // Den neuen Namen dem DAO mitteilen
-        this.dao.init(this.shortcutFactory, name);
+        this.dao.saveShortcuts(this.prolog);
+    }
+
+    /**
+     * Liefert Container-Beschreibung-Text.
+     * @return Description-String
+     */
+    public String getDescription() {
+        return this.prolog.get(IShortcutDAO.CONTAINER_DESCRIPTION_TAG);
+    }
+
+    /**
+     * Definiert die Container-Beschreibung.
+     * @param description neue Container-Beschreibung
+     * @throws DAOException Persistenz-Probleme
+     */
+    public void setDescription(String description) throws DAOException {
+        this.prolog.put(IShortcutDAO.CONTAINER_DESCRIPTION_TAG, description);
+        this.dao.saveShortcuts(this.prolog);
+    }
+
+    public Map<String, String> getProlog() {
+        return this.prolog;
     }
 
     //    private ShortcutFactory getShortcutFactory() {
@@ -160,7 +196,7 @@ public final class ShortcutContainer {
      */
     public boolean addShortcut(Shortcut shortcut) throws DAOException {
         if (!this.isReadOnly() && this.shortcutFactory.checkContainer(shortcut)) {
-            this.getDAO().addShortcut(shortcut);
+            this.getDAO().addShortcut(this.prolog, shortcut);
             return true;
         }
         return false;
@@ -174,7 +210,7 @@ public final class ShortcutContainer {
      */
     public boolean removeShortcut(Shortcut shortcut) throws DAOException {
         if (!this.isReadOnly() && this.shortcutFactory.checkContainer(shortcut)) {
-            this.getDAO().removeShortcut(shortcut);
+            this.getDAO().removeShortcut(this.prolog, shortcut);
             return true;
         }
         return false;
@@ -188,7 +224,7 @@ public final class ShortcutContainer {
      */
     public boolean updateShortcut(Shortcut shortcut) throws DAOException {
         if (!this.isReadOnly() && this.shortcutFactory.checkContainer(shortcut)) {
-            this.getDAO().updateShortcut(shortcut);
+            this.getDAO().updateShortcut(this.prolog, shortcut);
             return true;
         }
         return false;
@@ -208,7 +244,7 @@ public final class ShortcutContainer {
             newList.add(this.shortcutFactory.ensureCorrectContainer(shortcut));
         }
         if (!this.isReadOnly()) {
-            this.getDAO().mergeShortcuts(newList);
+            this.getDAO().mergeShortcuts(this.prolog, newList);
             return true;
         }
         return false;

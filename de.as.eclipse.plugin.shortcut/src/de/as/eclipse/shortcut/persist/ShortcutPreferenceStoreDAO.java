@@ -49,8 +49,8 @@ public class ShortcutPreferenceStoreDAO extends AbstractShortcutXmlDAO {
      * @see de.as.eclipse.shortcut.persist.AbstractShortcutDAO#saveShortcuts(java.util.Map)
      */
     @Override
-    protected void saveShortcuts(Map<Integer, Shortcut> shortcuts) throws DAOException {
-        this.getStore().setValue(ShortcutPreferenceStoreDAO.ROOT_TAG, AbstractShortcutXmlDAO.writeShortcutsToString(shortcuts, ShortcutPreferenceStoreDAO.SHORTCUTS_TAG, this.getContainerName()));
+    protected void saveShortcuts(Map<String, String> prolog, Map<Integer, Shortcut> shortcuts) throws DAOException {
+        this.getStore().setValue(ShortcutPreferenceStoreDAO.ROOT_TAG, AbstractShortcutXmlDAO.writeShortcutsToString(prolog, shortcuts, ShortcutPreferenceStoreDAO.SHORTCUTS_TAG));
     }
 
     @Override
