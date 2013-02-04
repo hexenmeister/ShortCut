@@ -28,7 +28,6 @@ public abstract class AbstractShortcutDAO implements IShortcutDAO {
 
     @Override
     public Map<String, String> init(ShortcutFactory factory) throws DAOException {
-        boolean firstInit = this.factory == null;
         this.factory = factory;
         // Existierenden Prolog lesen
         Map<String, String> prolog = this.readProlog();
