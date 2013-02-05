@@ -11,19 +11,22 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -100,6 +103,8 @@ public class ManageContainerDialog extends TrayDialog {
         this.table = this.checkboxTableViewer.getTable();
         this.table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 7));
 
+        //        this.table.setLinesVisible(true);
+
         this.checkboxTableViewer.setContentProvider(new IStructuredContentProvider() {
             @Override
             public void dispose() {
@@ -117,29 +122,75 @@ public class ManageContainerDialog extends TrayDialog {
 
         });
 
-        this.checkboxTableViewer.setLabelProvider(new ITableLabelProvider() {
+        //        this.checkboxTableViewer.setLabelProvider(new ITableLabelProvider() {
+        //            // TODO : change anonym classes to nested
+        //            @Override
+        //            public void removeListener(ILabelProviderListener arg0) {
+        //            }
+        //
+        //            @Override
+        //            public boolean isLabelProperty(Object arg0, String arg1) {
+        //                return false;
+        //            }
+        //
+        //            @Override
+        //            public void dispose() {
+        //            }
+        //
+        //            @Override
+        //            public void addListener(ILabelProviderListener arg0) {
+        //            }
+        //
+        //            @Override
+        //            public String getColumnText(Object arg0, int arg1) {
+        //                ShortcutContainer sc = (ShortcutContainer) arg0;
+        //                String colText = sc.getName();
+        //                ShortcutStore shortcutStore = ManageContainerDialog.this.getShortcutStore();
+        //                if (shortcutStore.isDefault(sc)) {
+        //                    colText += " (default)";
+        //                }
+        //                if (sc.isReadOnly()) {
+        //                    colText += " (read only)";
+        //                }
+        //                return colText;
+        //            }
+        //
+        //            @Override
+        //            public Image getColumnImage(Object arg0, int arg1) {
+        //                return null;
+        //            }
+        //        });
+
+        ColumnViewerToolTipSupport.enableFor(this.checkboxTableViewer, ToolTip.NO_RECREATE);
+        this.checkboxTableViewer.setLabelProvider(new StyledCellLabelProvider() {
             // TODO : change anonym classes to nested
             @Override
-            public void removeListener(ILabelProviderListener arg0) {
+            public String getToolTipText(Object element) {
+                ShortcutContainer sc = (ShortcutContainer) element;
+                return sc.getDescription();
             }
 
             @Override
-            public boolean isLabelProperty(Object arg0, String arg1) {
-                return false;
+            public Point getToolTipShift(Object object) {
+                return new Point(5, 5);
             }
 
             @Override
-            public void dispose() {
+            public int getToolTipDisplayDelayTime(Object object) {
+                return 2000;
             }
 
             @Override
-            public void addListener(ILabelProviderListener arg0) {
+            public int getToolTipTimeDisplayed(Object object) {
+                return 50000;
             }
 
             @Override
-            public String getColumnText(Object arg0, int arg1) {
-                ShortcutContainer sc = (ShortcutContainer) arg0;
+            public void update(ViewerCell cell) {
+                ShortcutContainer sc = (ShortcutContainer) cell.getElement();
                 String colText = sc.getName();
+                int len = colText.length();
+
                 ShortcutStore shortcutStore = ManageContainerDialog.this.getShortcutStore();
                 if (shortcutStore.isDefault(sc)) {
                     colText += " (default)";
@@ -147,12 +198,16 @@ public class ManageContainerDialog extends TrayDialog {
                 if (sc.isReadOnly()) {
                     colText += " (read only)";
                 }
-                return colText;
-            }
+                cell.setText(colText);
 
-            @Override
-            public Image getColumnImage(Object arg0, int arg1) {
-                return null;
+                Styler style = null;
+                StyledString styledString = new StyledString(colText, style);
+                styledString.setStyle(len, colText.length() - len, StyledString.QUALIFIER_STYLER);
+                cell.setStyleRanges(styledString.getStyleRanges());
+
+                //                cell.setImage(image);
+
+                super.update(cell);
             }
         });
 
