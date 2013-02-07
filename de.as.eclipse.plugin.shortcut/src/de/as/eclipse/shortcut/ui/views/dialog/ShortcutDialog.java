@@ -51,6 +51,8 @@ public class ShortcutDialog extends TrayDialog {
 
     private StyledText fLocation;
 
+    private StyledText fDescription;
+
     private Button btnGrabOutput;
 
     private ColorButton cColor;
@@ -356,10 +358,10 @@ public class ShortcutDialog extends TrayDialog {
         lblDescription.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
         lblDescription.setText("Description:");
 
-        StyledText fDescription = new StyledText(comp, SWT.BORDER | SWT.WRAP);
+        this.fDescription = new StyledText(comp, SWT.BORDER | SWT.WRAP);
         GridData gd_fDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
         gd_fDescription.heightHint = 22;
-        fDescription.setLayoutData(gd_fDescription);
+        this.fDescription.setLayoutData(gd_fDescription);
         new Label(comp, SWT.NONE);
 
         Composite composite = new Composite(comp, SWT.NONE);
@@ -385,6 +387,7 @@ public class ShortcutDialog extends TrayDialog {
         this.fCategory2.setText(shortcut.getCategory2() != null ? shortcut.getCategory2() : "");
         this.fPrio.setText(shortcut.getPriority() != null ? shortcut.getPriority() : "");
         this.fWorkDir.setText(shortcut.getWorkingDir() != null ? shortcut.getWorkingDir() : "");
+        this.fDescription.setText(shortcut.getDescription() != null ? shortcut.getDescription() : "");
         //        this.fLocation.setText(shortcut.getMoreCommands() != null ? shortcut.getMoreCommands() : "");
         this.cColor.setRgb(shortcut.getRgb());
         this.btnGrabOutput.setSelection(shortcut.isGrabOutput());
@@ -416,6 +419,7 @@ public class ShortcutDialog extends TrayDialog {
             shortcut.setCategory1(this.fCategory1.getText());
             shortcut.setCategory2(this.fCategory2.getText());
             shortcut.setWorkingDir(this.fWorkDir.getText());
+            shortcut.setDescription(this.fDescription.getText());
             //            shortcut.setMoreCommands(this.fLocation.getText());
             shortcut.setRgb(this.cColor.getRgb());
             shortcut.setGrabOutput(this.btnGrabOutput.getSelection());
