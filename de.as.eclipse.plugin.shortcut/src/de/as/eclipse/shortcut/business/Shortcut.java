@@ -25,6 +25,8 @@ public abstract class Shortcut {
 
     private String workingDir;
 
+    private String description;
+
     private boolean grabOutput;
 
     private String rgb;
@@ -97,6 +99,14 @@ public abstract class Shortcut {
 
     public void setWorkingDir(String workingDir) {
         this.workingDir = workingDir;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public boolean isGrabOutput() {
