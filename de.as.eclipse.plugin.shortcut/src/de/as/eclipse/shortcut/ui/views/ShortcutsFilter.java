@@ -1,9 +1,9 @@
 package de.as.eclipse.shortcut.ui.views;
 
+import de.as.eclipse.shortcut.business.Shortcut;
+
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-
-import de.as.eclipse.shortcut.business.Shortcut;
 
 public class ShortcutsFilter extends ViewerFilter {
 
@@ -62,8 +62,8 @@ public class ShortcutsFilter extends ViewerFilter {
                     return true;
                 }
             }
-            if (shortcut.getCategory1() != null) {
-                if (shortcut.getCategory1().toLowerCase().contains(this.searchString)) {
+            if (shortcut.getCategory2() != null) {
+                if (shortcut.getCategory2().toLowerCase().contains(this.searchString)) {
                     return true;
                 }
             }
