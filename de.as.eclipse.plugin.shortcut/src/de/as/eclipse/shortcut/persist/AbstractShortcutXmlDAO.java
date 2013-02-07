@@ -63,6 +63,8 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
 
         protected static final String RGB_TAG = "rgb";
 
+        protected static final String PAYLOAD_TAG = "payload";
+
         /**
          * Überführt Struktur ins XML
          * @param shortcut Eingabe
@@ -139,14 +141,12 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
      */
     private static class ShortcutXmlCodecV1_1 extends AbstractShortcutXmlCodec {
 
-        protected static final String PAYLOAD_TAG = "payload";
-
         @Override
         public void writeShortcut(Shortcut shortcut, IMemento memento) throws DAOException {
             memento.putInteger(AbstractShortcutXmlCodec.ID_TAG, shortcut.getId());
             memento.putString(AbstractShortcutXmlCodec.NAME_TAG, shortcut.getName());
             memento.putString(AbstractShortcutXmlCodec.GROUP_TAG, shortcut.getGroup());
-            memento.putString(ShortcutXmlCodecV1_1.PAYLOAD_TAG, shortcut.getPayload());
+            memento.putString(AbstractShortcutXmlCodec.PAYLOAD_TAG, shortcut.getPayload());
             memento.putString(AbstractShortcutXmlCodec.PRIORITY_TAG, shortcut.getPriority());
             memento.putString(AbstractShortcutXmlCodec.CATEGORY_TAG, shortcut.getCategory1());
             memento.putString(AbstractShortcutXmlCodec.CATEGORY2_TAG, shortcut.getCategory2());
@@ -160,7 +160,7 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
             shortcut.setId(memento.getInteger(AbstractShortcutXmlCodec.ID_TAG));
             shortcut.setName(memento.getString(AbstractShortcutXmlCodec.NAME_TAG));
             shortcut.setGroup(memento.getString(AbstractShortcutXmlCodec.GROUP_TAG));
-            shortcut.setPayload(memento.getString(ShortcutXmlCodecV1_1.PAYLOAD_TAG));
+            shortcut.setPayload(memento.getString(AbstractShortcutXmlCodec.PAYLOAD_TAG));
             shortcut.setPriority(memento.getString(AbstractShortcutXmlCodec.PRIORITY_TAG));
             shortcut.setCategory1(memento.getString(AbstractShortcutXmlCodec.CATEGORY_TAG));
             shortcut.setCategory2(memento.getString(AbstractShortcutXmlCodec.CATEGORY2_TAG));
@@ -172,18 +172,45 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
     }
 
     /**
-     * Codec-Map
+     * XMLCodec Verion 1.2.
+     * Änderungen gegenüber v1.1:
+     *  - 'description' neues Attrubut - Beschreibung (Text)
+     *
+     * @author Alexander Schulz
+     * Date: 01.12.2012
+     */
+    private static class ShortcutXmlCodecV1_2 extends ShortcutXmlCodecV1_1 {
+
+        protected static final String DESCRIPTION_TAG = "description";
+
+        @Override
+        public void writeShortcut(Shortcut shortcut, IMemento memento) throws DAOException {
+            super.writeShortcut(shortcut, memento);
+            memento.putString(ShortcutXmlCodecV1_2.DESCRIPTION_TAG, shortcut.getDescription());
+        }
+
+        @Override
+        public void readShortcut(Shortcut shortcut, IMemento memento) throws DAOException {
+            super.readShortcut(shortcut, memento);
+            shortcut.setDescription(memento.getString(ShortcutXmlCodecV1_2.DESCRIPTION_TAG));
+        }
+
+    }
+
+    /**
+     * Codec-Map.
      */
     private static Map<String, AbstractShortcutXmlCodec> codecMap = new HashMap<String, AbstractShortcutXmlDAO.AbstractShortcutXmlCodec>();
     static {
         AbstractShortcutXmlDAO.codecMap.put("1.0", new ShortcutXmlCodecV1_0());
         AbstractShortcutXmlDAO.codecMap.put("1.1", new ShortcutXmlCodecV1_1());
+        AbstractShortcutXmlDAO.codecMap.put("1.2", new ShortcutXmlCodecV1_2());
     }
 
     /**
      * Aktuelle Codec-Version
      */
-    private static final String CURRENT_CODEC_VERSION = "1.1";
+    private static final String CURRENT_CODEC_VERSION = "1.2";
 
     /**
      * Liefert zu der gewünschten Version passende Codec-Instanz (falls vorhanden).
