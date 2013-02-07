@@ -352,6 +352,16 @@ public class ShortcutDialog extends TrayDialog {
         btnWorkDir.setLayoutData(gd_btnWorkDir);
         btnWorkDir.setText("Browse...");
 
+        Label lblDescription = new Label(comp, SWT.WRAP);
+        lblDescription.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+        lblDescription.setText("Description:");
+
+        StyledText fDescription = new StyledText(comp, SWT.BORDER | SWT.WRAP);
+        GridData gd_fDescription = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+        gd_fDescription.heightHint = 22;
+        fDescription.setLayoutData(gd_fDescription);
+        new Label(comp, SWT.NONE);
+
         Composite composite = new Composite(comp, SWT.NONE);
         composite.setLayout(new GridLayout(1, false));
         composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
