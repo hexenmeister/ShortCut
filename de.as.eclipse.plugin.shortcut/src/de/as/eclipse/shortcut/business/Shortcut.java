@@ -150,6 +150,7 @@ public abstract class Shortcut {
         this.setCategory2(another.getCategory2());
         this.setPayload(another.getPayload());
         this.setWorkingDir(another.getWorkingDir());
+        this.setDescription(another.getDescription());
         this.setGrabOutput(another.isGrabOutput());
         this.setRgb(another.getRgb());
         return this;
