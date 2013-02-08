@@ -4,6 +4,15 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import de.as.eclipse.shortcut.Activator;
+import de.as.eclipse.shortcut.persist.DAOException;
+import de.as.eclipse.shortcut.persist.IShortcutDAO;
+import de.as.eclipse.shortcut.persist.ShortcutContainer;
+import de.as.eclipse.shortcut.persist.ShortcutFileDAO;
+import de.as.eclipse.shortcut.persist.ShortcutStore;
+import de.as.eclipse.shortcut.ui.UIConstants;
+import de.as.eclipse.shortcut.ui.UIUtils;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -37,15 +46,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
-
-import de.as.eclipse.shortcut.Activator;
-import de.as.eclipse.shortcut.persist.DAOException;
-import de.as.eclipse.shortcut.persist.IShortcutDAO;
-import de.as.eclipse.shortcut.persist.ShortcutContainer;
-import de.as.eclipse.shortcut.persist.ShortcutFileDAO;
-import de.as.eclipse.shortcut.persist.ShortcutStore;
-import de.as.eclipse.shortcut.ui.UIConstants;
-import de.as.eclipse.shortcut.ui.UIUtils;
 
 public class ManageContainerDialog extends TrayDialog {
 
@@ -172,12 +172,12 @@ public class ManageContainerDialog extends TrayDialog {
 
             @Override
             public Point getToolTipShift(Object object) {
-                return new Point(5, 5);
+                return new Point(15, 5);
             }
 
             @Override
             public int getToolTipDisplayDelayTime(Object object) {
-                return 2000;
+                return 700;
             }
 
             @Override
@@ -326,6 +326,7 @@ public class ManageContainerDialog extends TrayDialog {
                  * @param text zu validierende Zeichenkette
                  * @return String als Fehlermeldung oder null für OK
                  */
+                @Override
                 public String isValid(String text) {
                     int len = text.length();
 

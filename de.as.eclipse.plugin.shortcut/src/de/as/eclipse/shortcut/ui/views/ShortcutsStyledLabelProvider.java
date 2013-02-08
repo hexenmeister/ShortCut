@@ -1,9 +1,12 @@
 package de.as.eclipse.shortcut.ui.views;
 
+import de.as.eclipse.shortcut.business.Shortcut;
+
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.graphics.Point;
 
 public class ShortcutsStyledLabelProvider extends StyledCellLabelProvider {
 
@@ -74,4 +77,24 @@ public class ShortcutsStyledLabelProvider extends StyledCellLabelProvider {
         return false;
     }
 
+    @Override
+    public String getToolTipText(Object element) {
+        Shortcut sc = (Shortcut) element;
+        return sc.getDescription();
+    }
+
+    @Override
+    public Point getToolTipShift(Object object) {
+        return new Point(15, 5);
+    }
+
+    @Override
+    public int getToolTipDisplayDelayTime(Object object) {
+        return 700;
+    }
+
+    @Override
+    public int getToolTipTimeDisplayed(Object object) {
+        return 50000;
+    }
 }

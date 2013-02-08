@@ -3,18 +3,32 @@ package de.as.eclipse.shortcut.ui.views;
 import java.util.Iterator;
 import java.util.List;
 
+import de.as.eclipse.shortcut.Activator;
+import de.as.eclipse.shortcut.business.Shortcut;
+import de.as.eclipse.shortcut.internal.ProcessExecutor;
+import de.as.eclipse.shortcut.persist.DAOException;
+import de.as.eclipse.shortcut.persist.ShortcutContainer;
+import de.as.eclipse.shortcut.persist.ShortcutDataUtil;
+import de.as.eclipse.shortcut.persist.ShortcutStore;
+import de.as.eclipse.shortcut.ui.UIConstants;
+import de.as.eclipse.shortcut.ui.UIUtils;
+import de.as.eclipse.shortcut.ui.views.dialog.ManageContainerDialog;
+import de.as.eclipse.shortcut.ui.views.dialog.ShortcutDialog;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.FocusAdapter;
@@ -41,18 +55,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
-
-import de.as.eclipse.shortcut.Activator;
-import de.as.eclipse.shortcut.business.Shortcut;
-import de.as.eclipse.shortcut.internal.ProcessExecutor;
-import de.as.eclipse.shortcut.persist.DAOException;
-import de.as.eclipse.shortcut.persist.ShortcutContainer;
-import de.as.eclipse.shortcut.persist.ShortcutDataUtil;
-import de.as.eclipse.shortcut.persist.ShortcutStore;
-import de.as.eclipse.shortcut.ui.UIConstants;
-import de.as.eclipse.shortcut.ui.UIUtils;
-import de.as.eclipse.shortcut.ui.views.dialog.ManageContainerDialog;
-import de.as.eclipse.shortcut.ui.views.dialog.ShortcutDialog;
 
 public class ShortCutView extends ViewPart {
 
@@ -284,6 +286,7 @@ public class ShortCutView extends ViewPart {
         //        ShortCutView.tableViewer.setLabelProvider(new ShortcutsLabelProvider());
         this.filter = new ShortcutsFilter();
         ShortCutView.tableViewer.addFilter(this.filter);
+        ColumnViewerToolTipSupport.enableFor(ShortCutView.tableViewer, ToolTip.NO_RECREATE);
         ShortCutView.tableViewer.setLabelProvider(new ShortcutsStyledLabelProvider(new ShortcutsLabelProvider(), this.filter));
         // ShortCutView.tableViewer.setSorter(new ShortcutsSorter());
 
