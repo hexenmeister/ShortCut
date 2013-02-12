@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import de.as.eclipse.shortcut.business.Shortcut;
+import de.as.eclipse.shortcut.ui.console.ShortcutConsole;
+import de.as.eclipse.shortcut.ui.views.ShortCutView;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
@@ -25,10 +29,6 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IConsoleView;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-
-import de.as.eclipse.shortcut.business.Shortcut;
-import de.as.eclipse.shortcut.ui.console.ShortcutConsole;
-import de.as.eclipse.shortcut.ui.views.ShortCutView;
 
 public class ProcessExecutor {
 
@@ -59,6 +59,14 @@ public class ProcessExecutor {
         if (OSUtil.isWinNt() || OSUtil.isWinOld()) {
             File workDirFile = null;
             if (workDir != null) {
+                // Einführungszeichen entfernen
+                if (workDir.startsWith("\"")) {
+                    workDir = workDir.substring(1);
+                }
+                if (workDir.endsWith("\"")) {
+                    workDir = workDir.substring(0, workDir.length() - 1);
+                }
+
                 workDirFile = new File(workDir);
                 if (!workDirFile.exists() || !workDirFile.isDirectory()) {
                     workDirFile = null;
@@ -92,6 +100,12 @@ public class ProcessExecutor {
                     tokenListL.add(1, "url.dll,FileProtocolHandler");
                 }
 
+                // ----
+                // Bekanntes Problem mit cmd (bei grab output): Wenn in dem übergebenen Namen/Pfad Leerzeichen enthalten sind,
+                // können diese mit den Einführungszeichen maskiert werden. Dies funktioniert jedoch nicht, wenn dazwischen auch ein @ Zeichen
+                // vorhanden ist!!! So macht das cmd.exe (und das ist auch in Hilfe beschrieben: cmd /?).
+                // ----
+
                 // TODO: Umbauen: Parameter in Array!
                 // process = Runtime.getRuntime().exec(new String[] { "cmd", "/C", "dir" });
 
@@ -115,9 +129,36 @@ public class ProcessExecutor {
 
     private static List<String> tokenize(String str) {
         List<String> ret = new ArrayList<String>();
+        boolean inQuote = false;
+        String quotedToken = null;
         if (str != null) {
-            for (StringTokenizer st = new StringTokenizer(str); st.hasMoreElements();) {
-                ret.add(st.nextToken());
+            for (StringTokenizer st = new StringTokenizer(str, " \"", true); st.hasMoreElements();) {
+                String token = st.nextToken();
+                if (token.equals("\"")) {
+                    inQuote = !inQuote;
+                    if (!inQuote) {
+                        ret.add(quotedToken + token);
+                        quotedToken = null;
+                        continue;
+                    }
+                }
+                if (inQuote) {
+                    if (quotedToken == null) {
+                        quotedToken = token;
+                    } else {
+                        quotedToken += token;
+                    }
+                    continue;
+                }
+                if (token.trim().length() == 0) {
+                    // skip space (delimeter)
+                    continue;
+                }
+                ret.add(token);
+            }
+            // Wenn abschliessendes Einführungszeichen fehlt (sollte eigentlich nicht sein).
+            if (quotedToken != null) {
+                ret.add(quotedToken);
             }
         }
         return ret;
