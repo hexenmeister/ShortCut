@@ -49,6 +49,10 @@ public final class ShortcutContainer {
         //            // TODO Log
         //        }
         this.setName(name);
+
+        String user = System.getProperty("user.name");
+        boolean ro = (user != null && user.equalsIgnoreCase(this.prolog.get(IShortcutDAO.USER_TAG)));
+        this.setReadOnly(ro);
     }
 
     /**

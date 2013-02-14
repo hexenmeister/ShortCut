@@ -10,11 +10,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.as.eclipse.shortcut.business.Shortcut;
+
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.XMLMemento;
-
-import de.as.eclipse.shortcut.business.Shortcut;
 
 /**
  * Ergänzt AbstractShortcutDAO um die Funktionalität Einträge (Shortcuts) im XML-Form zu speichern. Benutzt XMLMemento (Eclipse).
@@ -268,7 +268,7 @@ public abstract class AbstractShortcutXmlDAO extends AbstractShortcutDAO {
             rootMemento.putString(IShortcutDAO.CREATOR_TAG, "ShortCut");
             rootMemento.putString(IShortcutDAO.CONTAINER_NAME_TAG, containerName);
             rootMemento.putString(IShortcutDAO.CONTAINER_DESCRIPTION_TAG, containerDescription);
-            rootMemento.putString(IShortcutDAO.USER_TAG, System.getProperty("user.name"));
+            rootMemento.putString(IShortcutDAO.USER_TAG, System.getProperty("user.name")); // TODO: hier und im ShortcutContainer: eine Funktion erstellen.
             rootMemento.putString(IShortcutDAO.OS_TAG, System.getProperty("os.name") + ", " + System.getProperty("os.version") + ", " + System.getProperty("os.arch"));
             rootMemento.putString(IShortcutDAO.DATE_TAG, DateFormat.getDateTimeInstance().format(new Date()));
 
