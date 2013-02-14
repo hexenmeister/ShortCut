@@ -185,7 +185,7 @@ public final class ShortcutContainer {
      *
      * @param readOnly true, wenn änderbar, fals sonst
      */
-    public void setReadOnly(boolean readOnly) {
+    protected void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
 
