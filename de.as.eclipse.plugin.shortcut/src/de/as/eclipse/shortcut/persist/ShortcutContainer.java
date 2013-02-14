@@ -92,13 +92,18 @@ public final class ShortcutContainer {
      * Bietet die Möglichkeit, den Container zu umbenennen.
      * @param name Der neue containername.
      * @throws DAOException Persistenz-Probleme
+     * @return true, wenn erfolgreich (Container nicht schreibgeschützt)
      */
-    public void rename(String name) throws DAOException {
-        this.checkContainerName(name);
+    public boolean rename(String name) throws DAOException {
+        if (!this.isReadOnly()) {
+            this.checkContainerName(name);
 
-        this.setName(name);
-        // Den neuen Namen dem DAO mitteilen
-        this.dao.saveShortcuts(this.prolog);
+            this.setName(name);
+            // Den neuen Namen dem DAO mitteilen
+            this.dao.saveShortcuts(this.prolog);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -113,10 +118,15 @@ public final class ShortcutContainer {
      * Definiert die Container-Beschreibung.
      * @param description neue Container-Beschreibung
      * @throws DAOException Persistenz-Probleme
+     * @return true, wenn erfolgreich (Container nicht schreibgeschützt)
      */
-    public void setDescription(String description) throws DAOException {
-        this.prolog.put(IShortcutDAO.CONTAINER_DESCRIPTION_TAG, description);
-        this.dao.saveShortcuts(this.prolog);
+    public boolean setDescription(String description) throws DAOException {
+        if (!this.isReadOnly()) {
+            this.prolog.put(IShortcutDAO.CONTAINER_DESCRIPTION_TAG, description);
+            this.dao.saveShortcuts(this.prolog);
+            return true;
+        }
+        return false;
     }
 
     public Map<String, String> getProlog() {
@@ -172,7 +182,7 @@ public final class ShortcutContainer {
      * Das DAO ist vorrangig für die Änderbarkeit zuständig,
      * daher kann im DAO als nicht änderbar definierter Container
      * nicht nachträglich als beschreibbar umdefiniert werden.
-     * 
+     *
      * @param readOnly true, wenn änderbar, fals sonst
      */
     public void setReadOnly(boolean readOnly) {
