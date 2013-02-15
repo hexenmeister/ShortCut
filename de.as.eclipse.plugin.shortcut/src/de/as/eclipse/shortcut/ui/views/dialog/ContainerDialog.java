@@ -2,6 +2,11 @@ package de.as.eclipse.shortcut.ui.views.dialog;
 
 import java.io.File;
 
+import de.as.eclipse.shortcut.Activator;
+import de.as.eclipse.shortcut.persist.ShortcutContainer;
+import de.as.eclipse.shortcut.ui.UIConstants;
+import de.as.eclipse.shortcut.ui.UIUtils;
+
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -18,11 +23,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import de.as.eclipse.shortcut.Activator;
-import de.as.eclipse.shortcut.ui.UIConstants;
-import de.as.eclipse.shortcut.ui.UIUtils;
-
 public class ContainerDialog extends TrayDialog {
+
+    private ShortcutContainer container = null;
+
     private Text fName;
 
     private Text fFile;
@@ -34,8 +38,13 @@ public class ContainerDialog extends TrayDialog {
     private Combo fType;
 
     public ContainerDialog(Shell shell) {
+        this(shell, null);
+    }
+
+    public ContainerDialog(Shell shell, ShortcutContainer container) {
         super(shell);
         this.setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.PRIMARY_MODAL);
+        this.container = container;
     }
 
     @Override
@@ -48,8 +57,12 @@ public class ContainerDialog extends TrayDialog {
         Rectangle r = shell.getParent().getBounds();
         shell.setBounds(r.x + ((r.width - w) / 2), r.y + ((r.height - h) / 2), w, h);
 
-        // Fenster-Titel setzen
-        shell.setText("Create new Container");
+        // Fenster-Titel setzen (je nach dem, ob neu oder edit)
+        if (this.container == null) {
+            shell.setText("Create new Container");
+        } else {
+            shell.setText("Edit Container Description");
+        }
 
         shell.setImage(Activator.getImage(UIConstants.ICON_CONTAINERS)); // TODO
     }
@@ -124,7 +137,15 @@ public class ContainerDialog extends TrayDialog {
         this.btnRestrictedAccess.setText("restricted write access");
         this.setHelpAvailable(false);
 
+        if (this.container != null) {
+            this.applyValues(this.container);
+        }
+
         return comp;
+    }
+
+    private void applyValues(ShortcutContainer container) {
+        // TODO
     }
 
     @Override
@@ -132,7 +153,7 @@ public class ContainerDialog extends TrayDialog {
         this.setReturnCode(buttonId); // return code je nach button
         if (buttonId == 0) {
             // Create Container
-            // TODO Create Container
+            // TODO Create / Edit Container
             this.close();
         } else {
             this.close();
