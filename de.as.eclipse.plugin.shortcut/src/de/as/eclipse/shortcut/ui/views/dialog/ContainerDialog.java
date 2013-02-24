@@ -2,11 +2,6 @@ package de.as.eclipse.shortcut.ui.views.dialog;
 
 import java.io.File;
 
-import de.as.eclipse.shortcut.Activator;
-import de.as.eclipse.shortcut.persist.ShortcutContainer;
-import de.as.eclipse.shortcut.ui.UIConstants;
-import de.as.eclipse.shortcut.ui.UIUtils;
-
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -23,6 +18,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import de.as.eclipse.shortcut.Activator;
+import de.as.eclipse.shortcut.persist.ShortcutContainer;
+import de.as.eclipse.shortcut.ui.UIConstants;
+import de.as.eclipse.shortcut.ui.UIUtils;
+
 public class ContainerDialog extends TrayDialog {
 
     private ShortcutContainer container = null;
@@ -37,6 +37,9 @@ public class ContainerDialog extends TrayDialog {
 
     private Combo fType;
 
+    /**
+     * @wbp.parser.constructor
+     */
     public ContainerDialog(Shell shell) {
         this(shell, null);
     }
@@ -61,7 +64,7 @@ public class ContainerDialog extends TrayDialog {
         if (this.container == null) {
             shell.setText("Create new Container");
         } else {
-            shell.setText("Edit Container Description");
+            shell.setText("Edit Container");
         }
 
         shell.setImage(Activator.getImage(UIConstants.ICON_CONTAINERS)); // TODO
