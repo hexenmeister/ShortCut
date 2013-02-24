@@ -51,7 +51,7 @@ public final class ShortcutContainer {
         this.setName(name);
 
         String user = System.getProperty("user.name");
-        boolean ro = (user != null && user.equalsIgnoreCase(this.prolog.get(IShortcutDAO.USER_TAG)));
+        boolean ro = ((user != null) && user.equalsIgnoreCase(this.prolog.get(IShortcutDAO.USER_TAG)));
         this.setReadOnly(ro);
     }
 
@@ -133,6 +133,10 @@ public final class ShortcutContainer {
         return false;
     }
 
+    /**
+     * Liefert Prolog-Map. Diese enthält die Meta-Daten für das gegebene Container.
+     * @return Map
+     */
     public Map<String, String> getProlog() {
         return this.prolog;
     }
