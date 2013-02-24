@@ -134,6 +134,29 @@ public final class ShortcutContainer {
     }
 
     /**
+     * Liefert Modus der Zugriffsbeschränkung.
+     * @return Description-String
+     */
+    public String getAccessMode() {
+        return this.prolog.get(IShortcutDAO.CONTAINER_ACCES_MODE_TAG);
+    }
+
+    /**
+     * Definiert Zugriffsbeschränkung-Modus.
+     * @param accessMode Zugriffsbeschränkung.
+     * @throws DAOException Persistenz-Probleme
+     * @return true, wenn erfolgreich (Container nicht schreibgeschützt)
+     */
+    public boolean setAccessMode(String accessMode) throws DAOException {
+        if (!this.isReadOnly()) {
+            this.prolog.put(IShortcutDAO.CONTAINER_ACCES_MODE_TAG, accessMode);
+            this.dao.saveShortcuts(this.prolog);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Liefert Prolog-Map. Diese enthält die Meta-Daten für das gegebene Container.
      * @return Map
      */

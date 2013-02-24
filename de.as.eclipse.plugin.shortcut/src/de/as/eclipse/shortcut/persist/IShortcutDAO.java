@@ -46,6 +46,11 @@ public interface IShortcutDAO {
     public static final String DATE_TAG = "date";
 
     /**
+     * Prolog-Tag: Modus der Zugriffbeschränkung.
+     */
+    public static final String CONTAINER_ACCES_MODE_TAG = "accessMode";
+
+    /**
      * Prolog-Tag: Container-Format-Version.
      */
     public static final String VERSION_TAG = "version";
