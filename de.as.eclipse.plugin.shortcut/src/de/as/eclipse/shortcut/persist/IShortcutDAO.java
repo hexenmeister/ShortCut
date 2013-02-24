@@ -51,6 +51,26 @@ public interface IShortcutDAO {
     public static final String CONTAINER_ACCES_MODE_TAG = "accessMode";
 
     /**
+     * Zugriffsbeschränkung: Schreibzugriff nur Ersteller.
+     */
+    public static final String CONTAINER_ACCES_MODE_WRITE_CREATOR_ONLY = "rw_creator";
+
+    /**
+     * Zugriffsbeschränkung: Zugriff nur Ersteller.
+     */
+    public static final String CONTAINER_ACCES_MODE_CREATOR_ONLY = "creator";
+
+    /**
+     * Zugriffsbeschränkung: Schreibzugriff für alle.
+     */
+    public static final String CONTAINER_ACCES_MODE_RW = "rw";
+
+    /**
+     * Zugriffsbeschränkung: Schreibzugriff niemand.
+     */
+    public static final String CONTAINER_ACCES_MODE_RO = "ro";
+
+    /**
      * Prolog-Tag: Container-Format-Version.
      */
     public static final String VERSION_TAG = "version";
