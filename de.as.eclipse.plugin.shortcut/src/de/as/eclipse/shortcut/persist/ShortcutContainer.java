@@ -50,9 +50,34 @@ public final class ShortcutContainer {
         //        }
         this.setName(name);
 
-        String user = System.getProperty("user.name");
-        boolean ro = ((user != null) && user.equalsIgnoreCase(this.prolog.get(IShortcutDAO.USER_TAG)));
-        this.setReadOnly(ro);
+        this.checkAccess();
+
+    }
+
+    /**
+     * Prüft Berechtigungen des aktuellen Benutzers.
+     * TODO: Access-Exception
+     * @throws DAOException Access denied
+     */
+    private void checkAccess() throws DAOException {
+        // Check Access
+        // CONTAINER_ACCES_MODE_WRITE_CREATOR_ONLY, CONTAINER_ACCES_MODE_CREATOR_ONLY, CONTAINER_ACCES_MODE_RW, CONTAINER_ACCES_MODE_RO
+        String accessMode = this.getAccessMode();
+        if (!IShortcutDAO.CONTAINER_ACCES_MODE_RW.equals(accessMode)) {
+            if (IShortcutDAO.CONTAINER_ACCES_MODE_RO.equals(accessMode)) {
+                this.setReadOnly(true);
+            } else {
+                String user = System.getProperty("user.name");
+                boolean userMatch = ((user != null) && user.equalsIgnoreCase(this.prolog.get(IShortcutDAO.USER_TAG)));
+                if (IShortcutDAO.CONTAINER_ACCES_MODE_WRITE_CREATOR_ONLY.equals(accessMode)) {
+                    this.setReadOnly(!userMatch);
+                } else if (IShortcutDAO.CONTAINER_ACCES_MODE_CREATOR_ONLY.equals(accessMode)) {
+                    if (!userMatch) {
+                        throw new DAOException("Container access denied.", null);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -138,7 +163,11 @@ public final class ShortcutContainer {
      * @return Description-String
      */
     public String getAccessMode() {
-        return this.prolog.get(IShortcutDAO.CONTAINER_ACCES_MODE_TAG);
+        String accessMode = this.prolog.get(IShortcutDAO.CONTAINER_ACCES_MODE_TAG);
+        if (accessMode == null) {
+            accessMode = IShortcutDAO.CONTAINER_ACCES_MODE_RW;
+        }
+        return accessMode;
     }
 
     /**
